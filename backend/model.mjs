@@ -276,7 +276,6 @@ export {
   getAllExercises,
   getExerciseById,
   getUserById,
-  updateExercise,
   updateUser,
   deleteExerciseById,
   Exercise,
