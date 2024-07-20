@@ -28,6 +28,7 @@ userSchema.statics.getUserByEmailAndPassword = async function (
   if (!user) {
     throw new Error("User not found");
   }
+  // TODO: bcrypt.compare(password, user.password)
   if (user.password === password) {
     return user;
   } else {
