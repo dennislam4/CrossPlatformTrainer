@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = mongoose.Schema({
   id: { type: Number },
@@ -18,6 +19,21 @@ const userSchema = mongoose.Schema({
   body_type: { type: String },
   weekly_fitness_plan_id: { type: String },
 });
+
+userSchema.statics.getUserByEmailAndPassword = async function (
+  email_address,
+  password
+) {
+  const user = await this.findOne({ email_address: email_address });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  if (user.password === password) {
+    return user;
+  } else {
+    throw new Error("Invalid password");
+  }
+};
 
 const User = mongoose.model("User", userSchema);
 

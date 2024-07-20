@@ -1,45 +1,41 @@
 import "dotenv/config";
+import cors from "cors";
 import express from "express";
 import * as fitnessDb from "./model.mjs";
+import User from "./userSchema.mjs";
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 2355;
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
-// CREATE controller ******************************************
-app.post("/users", (req, res) => {
-  fitnessDb
-    .createUser(
-      req.body.email_address,
-      req.body.password,
-      req.body.name,
-      req.body.age,
-      req.body.resting_heartrate,
-      req.body.weight,
-      req.body.weight_unit,
-      req.body.height,
-      req.body.height_unit,
-      req.body.calculate_as_gender,
-      req.body.avatar_id,
-      req.body.fitness_level,
-      req.body.fitness_goal,
-      req.body.body_type,
-      req.body.weekly_fitness_plan_id
-    )
-    .then((user) => {
-      res.status(201).json(user);
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(400).json({
-        error: "Could not add this user",
-      });
-    });
+// SIGN IN controller ******************************************
+app.post("/signin", async (req, res) => {
+  const email_address = req.body.email_address;
+  const password = req.body.password;
+
+  try {
+    const user = await User.getUserByEmailAndPassword(email_address, password);
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    res.status(400).json({ error: "Login failed" });
+  }
 });
 
 // RETRIEVE controller ****************************************************
 // GET user by ID
-app.get("/user/:_id", (req, res) => {
+app.get("/users/:_id", (req, res) => {
   const userId = req.params._id;
   fitnessDb
     .getUserById(userId)
