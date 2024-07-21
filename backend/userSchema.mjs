@@ -20,6 +20,19 @@ const userSchema = mongoose.Schema({
   weekly_fitness_plan_id: { type: String },
 });
 
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    const salt = await bcrypt.genSalt(8);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
+const isBcryptHash = (password) => {
+  const bcryptHashRegex = /^\$2[ayb]\$.{56}$/;
+  return bcryptHashRegex.test(password);
+};
+
 userSchema.statics.getUserByEmailAndPassword = async function (
   email_address,
   password
@@ -28,12 +41,18 @@ userSchema.statics.getUserByEmailAndPassword = async function (
   if (!user) {
     throw new Error("User not found");
   }
-  // TODO: bcrypt.compare(password, user.password)
-  if (user.password === password) {
-    return user;
+  const storedPassword = user.password;
+  if (isBcryptHash(storedPassword)) {
+    const isPasswordMatch = await bcrypt.compare(password, storedPassword);
+    if (!isPasswordMatch) {
+      throw new Error("Invalid password");
+    }
   } else {
-    throw new Error("Invalid password");
+    if (user.password !== password) {
+      throw new Error("Invalid password");
+    }
   }
+  return user;
 };
 
 const User = mongoose.model("User", userSchema);

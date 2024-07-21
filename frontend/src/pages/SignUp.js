@@ -1,6 +1,7 @@
 // SignUp.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import bcrypt from "bcryptjs";
 
 function SignUp() {
   const [name, setName] = useState("");
