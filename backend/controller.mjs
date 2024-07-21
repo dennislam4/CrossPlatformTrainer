@@ -33,6 +33,21 @@ app.post("/signin", async (req, res) => {
   }
 });
 
+// SIGN UP (Create user)
+app.post("/signup", async (req, res) => {
+  const newUserData = {
+    name: req.body.name,
+    email_address: req.body.email_address,
+    password: req.body.password,
+  };
+  try {
+    const newUser = await fitnessDb.createDocument(User, newUserData);
+    res.status(201).json(newUser);
+  } catch (error) {
+    res.status(400).json({ error: "Could not create user account." });
+  }
+});
+
 // RETRIEVE controller ****************************************************
 // GET user by ID
 app.get("/users/:_id", (req, res) => {
