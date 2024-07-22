@@ -9,7 +9,6 @@ function SignIn() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-import React, { useState } from 'react';
 
 function SignIn() {
   const [email, setEmail] = useState('');
