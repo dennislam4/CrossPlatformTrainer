@@ -74,7 +74,7 @@ const UserProfile = () => {
   const handleHeightUnitChange = (e) => {
     setUser({
       ...user,
-      heightUnit: e.target.value,
+      height_unit: e.target.value,
     });
   };
 
@@ -82,7 +82,7 @@ const UserProfile = () => {
   const handleWeightUnitChange = (e) => {
     setUser({
       ...user,
-      weightUnit: e.target.value,
+      weight_unit: e.target.value,
     });
   };
 
@@ -130,7 +130,7 @@ const UserProfile = () => {
         <label>
           Height Unit:
           <select
-            name="heightUnit"
+            name="height_unit"
             value={user.height_unit}
             onChange={handleHeightUnitChange}
           >
@@ -144,7 +144,7 @@ const UserProfile = () => {
               Height (Feet):
               <input
                 type="number"
-                name="heightFeet"
+                name="height_feet"
                 value={user.height_feet}
                 onChange={handleChange}
               />
@@ -153,7 +153,7 @@ const UserProfile = () => {
               Height (Inches):
               <input
                 type="number"
-                name="heightInches"
+                name="height_inches"
                 value={user.height_inches}
                 onChange={handleChange}
               />
@@ -165,7 +165,7 @@ const UserProfile = () => {
               Height (Meters):
               <input
                 type="number"
-                name="heightMeters"
+                name="height_meters"
                 value={user.height_meters}
                 onChange={handleChange}
               />
@@ -174,7 +174,7 @@ const UserProfile = () => {
               Height (Centimeters):
               <input
                 type="number"
-                name="heightCentimeters"
+                name="height_centimeters"
                 value={user.height_centimeters}
                 onChange={handleChange}
               />
@@ -190,7 +190,7 @@ const UserProfile = () => {
             onChange={handleChange}
           />
           <select
-            name="weightUnit"
+            name="weight_unit"
             value={user.weight_unit}
             onChange={handleWeightUnitChange}
           >
@@ -201,7 +201,7 @@ const UserProfile = () => {
         <label>
           Fitness Level:
           <select
-            name="fitnessLevel"
+            name="fitness_level"
             value={user.fitness_level}
             onChange={handleChange}
           >
@@ -214,7 +214,7 @@ const UserProfile = () => {
         <label>
           Fitness Goal:
           <select
-            name="fitnessGoal"
+            name="fitness_goal"
             value={user.fitness_goal}
             onChange={handleChange}
           >
@@ -229,7 +229,7 @@ const UserProfile = () => {
         <label>
           Body Type:
           <select
-            name="bodyType"
+            name="body_type"
             value={user.body_type}
             onChange={handleChange}
           >
