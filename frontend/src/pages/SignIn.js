@@ -26,7 +26,8 @@ function SignIn() {
         body: JSON.stringify({ email_address: email, password: password }),
       });
       if (response.ok) {
-        navigate("/dashboard");
+        const user = await response.json();
+        navigate("/userprofile", { state: { user } });
       } else {
         const errorMsg = await response.json();
         setError(errorMsg.message || "An error occurred. Please try again.");
