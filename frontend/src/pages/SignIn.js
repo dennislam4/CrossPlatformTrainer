@@ -1,7 +1,6 @@
 // SignIn.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import bcrypt from "bcryptjs";
 
 function SignIn() {
   const [email, setEmail] = useState("");
