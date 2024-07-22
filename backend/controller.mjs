@@ -50,20 +50,17 @@ app.post("/signup", async (req, res) => {
 
 // RETRIEVE controller ****************************************************
 // GET user by ID
-app.get("/users/:_id", (req, res) => {
+app.get("/users/:_id", async (req, res) => {
   const userId = req.params._id;
-  fitnessDb
-    .getUserById(userId)
-    .then((user) => {
-      if (user !== null) {
-        res.status(200).json(user);
-      } else {
-        res.status(404).json({ Error: "user not found" });
-      }
-    })
-    .catch((error) => {
-      res.status(400).json({ Error: "Request to retrieve user failed" });
-    });
+  try {
+    const user = await fitnessDb.getModelById(User, userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ error: "Request to retrieve user failed" });
+  }
 });
 
 // DELETE Controller ******************************
@@ -84,55 +81,42 @@ app.delete("/exercises/:_id", (req, res) => {
 });
 
 // UPDATE controller ************************************
-app.put("/users/:_id", (req, res) => {
-  fitnessDb
-    .replaceUser(
-      req.params._id,
-      req.body.email_address,
-      req.body.password,
-      req.body.name,
-      req.body.age,
-      req.body.resting_heartrate,
-      req.body.weight,
-      req.body.weight_unit,
-      req.body.height,
-      req.body.height_unit,
-      req.body.calculate_as_gender,
-      req.body.avatar_id,
-      req.body.fitness_level,
-      req.body.fitness_goal,
-      req.body.body_type,
-      req.body.weekly_fitness_plan_id
-    )
+app.put("/updateprofile", async (req, res) => {
+  const _id = req.body._id;
+  const revisedUserData = {
+    email_address: req.body.email,
+    password: req.body.password,
+    name: req.body.name,
+    age: req.body.age,
+    weight: req.body.weight,
+    height: req.body.height,
+    height_unit: req.body.heightUnit,
+    weight_unit: req.body.weightUnit,
+    fitness_level: req.body.fitnessLevel,
+    fitness_goal: req.body.fitnessGoal,
+    body_type: req.body.bodyType,
+    height_feet: req.body.heightFeet,
+    height_inches: req.body.heightInches,
+    height_meters: req.body.heightMeters,
+    height_centimeters: req.body.heightCentimeters,
+  };
+  try {
+    // Update the user document by _id and return the updated document
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      revisedUserData,
+      { new: true } // Return the updated document
+    );
 
-    .then((numUpdated) => {
-      if (numUpdated === 1) {
-        res.status(200).json({
-          _id: req.params._id,
-          email_address: req.body.email_address,
-          password: req.body.password,
-          name: req.body.name,
-          age: req.body.age,
-          resting_heartrate: req.body.resting_heartrate,
-          weight: req.body.weight,
-          weight_unit: req.body.weight_unit,
-          height: req.body.height,
-          height_unit: req.body.height_unit,
-          calculate_as_gender: req.body.calculate_as_gender,
-          avatar_id: req.body.avatar_id,
-          fitness_level: req.body.fitness_level,
-          fitness_goal: req.body.fitness_goal,
-          body_type: req.body.body_type,
-          weekly_fitness_plan_id: req.body.weekly_fitness_plan_id,
-        });
-      } else {
-        res.status(400).json({ Error: "Request to update this user failed" });
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(400).json({ Error: "Request to update this user failed" });
-    });
+    if (updatedUser) {
+      res.status(200).json(updatedUser);
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "Request to update this user failed" });
+  }
 });
 
 app.listen(PORT, () => {
