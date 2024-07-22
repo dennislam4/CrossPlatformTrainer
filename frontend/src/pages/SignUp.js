@@ -1,10 +1,20 @@
 // SignUp.js
-import React, { useState } from 'react';
+
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+function SignUp() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
 function SignUp() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
 
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -17,6 +27,29 @@ function SignUp() {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
+
+
+  const handleSignUp = async () => {
+    try {
+      const response = await fetch("/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email_address: email, password }),
+      });
+      if (response.ok) {
+        console.log("User created successfully");
+        navigate("/dashboard");
+      } else {
+        const errorMsg = await response.json();
+        setError(errorMsg.message || "An error occurred. Please try again.");
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+    }
+  };
+=======
 
   return (
     <div className="flex flex-col justify-center px-9 py-20 mx-auto w-full text-xl bg-lime-200 border border-black border-solid max-w-[480px]">
@@ -55,10 +88,18 @@ function SignUp() {
         </div>
         <div className="shrink-0 mt-1 h-0.5 bg-black border border-black border-solid" />
         <button
+
+          onClick={handleSignUp}
+
+
           className="justify-center self-center p-2.5 mt-16 mb-5 italic font-bold bg-violet-300 rounded-xl border border-black border-solid text-neutral-900"
         >
           Sign Up
         </button>
+
+        {error && <div className="text-red-500">{error}</div>}
+
+
       </div>
     </div>
   );
