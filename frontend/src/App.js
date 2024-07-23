@@ -7,6 +7,7 @@ import SignIn from "./pages/SignIn.js";
 import SignUp from "./pages/SignUp.js";
 import UserProfile from "./pages/UserProfile.js";
 import Nav from "./pages/Nav.js";
+import FitnessSurvey from "./pages/FitnessSurvey";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/Nav" element={<Nav />} />
         <Route path="/userprofile" element={<UserProfile />} />
+        <Route path="/fitnesssurvey" element={<FitnessSurvey />} />
       </Routes>
     </Router>
   );
