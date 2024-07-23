@@ -8,8 +8,13 @@ const FitnessSurvey = () => {
     const [fitnessGoal, setFitnessGoal] = useState('');
     const [fitnessLevel, setFitnessLevel] = useState('');
     const [bodyType, setBodyType] = useState('');
-    const [height, setHeight] = useState('');
-    const [weight, setWeight] = useState('');
+    const [heightUnit, setHeightUnit] = useState('imperial');
+    const [heightFeet, setHeightFeet] = useState('');
+    const [heightInches, setHeightInches] = useState('');
+    const [heightMeters, setHeightMeters] = useState('');
+    const [heightCentimeters, setHeightCentimeters] = useState('');
+    const [weightUnit, setWeightUnit] = useState('lbs');
+    const [weightValue, setWeightValue] = useState('');
     const [age, setAge] = useState('');
     const [gender, setGender] = useState('');
 
@@ -27,8 +32,13 @@ const FitnessSurvey = () => {
             fitnessGoal,
             fitnessLevel,
             bodyType,
-            height,
-            weight,
+            heightUnit,
+            heightFeet,
+            heightInches,
+            heightMeters,
+            heightCentimeters,
+            weightUnit,
+            weightValue,
             age,
             gender,
         });
@@ -37,6 +47,7 @@ const FitnessSurvey = () => {
     // Render the survey steps
     const renderStep = () => {
         switch (step) {
+            // Fitness Goal Survey Question
             case 0:
                 return (
                     <div className="flex flex-col items-center">
@@ -48,6 +59,7 @@ const FitnessSurvey = () => {
                         <button className="survey-button" onClick={() => { setFitnessGoal('Flexibility'); nextStep(); }}>Flexibility</button>
                     </div>
                 );
+            // Fitness Level Survey Question
             case 1:
                 return (
                     <div className="flex flex-col items-center">
@@ -57,6 +69,7 @@ const FitnessSurvey = () => {
                         <button className="survey-button" onClick={() => { setFitnessLevel('Advanced'); nextStep(); }}>Advanced</button>
                     </div>
                 );
+            // Body Type Survey Question
             case 2:
                 return (
                     <div className="flex flex-col items-center">
@@ -66,38 +79,54 @@ const FitnessSurvey = () => {
                         <button className="survey-button" onClick={() => { setBodyType('Endomorph'); nextStep(); }}>Endomorph</button>
                     </div>
                 );
+            // Height Survey Question with Imperial and Metric Unit Selection
             case 3:
                 return (
                     <div className="flex flex-col items-center">
-                        <h2 className="text-3xl italic">What is your height?</h2>
-                        <input
-                            type="number"
-                            value={height}
-                            onChange={(e) => setHeight(e.target.value)}
-                            className="survey-input"
-                        />
+                        <h2 className="text-3xl italic">Height Unit:</h2>
+                        <select name="heightUnit" value={heightUnit} onChange={(e) => setHeightUnit(e.target.value)} className="survey-input">
+                            <option value="imperial">Imperial (ft/in)</option>
+                            <option value="metric">Metric (m/cm)</option>
+                        </select>
+                        {heightUnit === 'imperial' ? (
+                            <>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Height (Feet):</label>
+                                <input type="number" name="heightFeet" value={heightFeet} onChange={(e) => setHeightFeet(e.target.value)} className="survey-input"/>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Height (Inches):</label>
+                                <input type="number" name="heightInches" value={heightInches} onChange={(e) => setHeightInches(e.target.value)} className="survey-input"/>
+                            </>
+                        ):
+                            (
+                            <>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Height (Meters):</label>
+                                <input type="number" name="heightMeters" value={heightMeters} onChange={(e) => setHeightMeters(e.target.value)} className="survey-input"/>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Height (Centimeters):</label>
+                                <input type="number" name="heightCentimeters" value={heightCentimeters} onChange={(e) => setHeightCentimeters(e.target.value)} className="survey-input"/>
+                            </>
+                        )}
                         <div className="flex space-x-4">
                             <button className="survey-nav-button" onClick={previousStep}>Back</button>
                             <button className="survey-nav-button" onClick={nextStep}>Next</button>
                         </div>
                     </div>
                 );
+            // Weight Survey Question with lbs and kgs Unit Selection
             case 4:
                 return (
                     <div className="flex flex-col items-center">
-                        <h2 className="text-3xl italic">What is your weight?</h2>
-                        <input
-                            type="number"
-                            value={weight}
-                            onChange={(e) => setWeight(e.target.value)}
-                            className="survey-input"
-                        />
+                        <h2 className="text-3xl italic">Weight:</h2>
+                        <input type="number" name="weightValue" value={weightValue} onChange={(e) => setWeightValue(e.target.value)} className="survey-input"/>
+                        <select name="weightUnit" value={weightUnit} onChange={(e) => setWeightUnit(e.target.value)} className="survey-input mt-2">
+                            <option value="lbs">lbs</option>
+                            <option value="kgs">kgs</option>
+                        </select>
                         <div className="flex space-x-4">
                             <button className="survey-nav-button" onClick={previousStep}>Back</button>
                             <button className="survey-nav-button" onClick={nextStep}>Next</button>
                         </div>
                     </div>
                 );
+            // Age Survey Question
             case 5:
                 return (
                     <div className="flex flex-col items-center">
@@ -114,6 +143,7 @@ const FitnessSurvey = () => {
                         </div>
                     </div>
                 );
+            // Gender Survey Question
             case 6:
                 return (
                     <div className="flex flex-col items-center">
@@ -127,7 +157,6 @@ const FitnessSurvey = () => {
                 return (
                     <div className="flex flex-col items-center">
                         <h2 className="text-3xl italic">Your Weekly Fitness Plan</h2>
-                        {/* Render the fitness plan here */}
                     </div>
                 );
         }
