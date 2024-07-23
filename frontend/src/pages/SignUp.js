@@ -31,8 +31,8 @@ function SignUp() {
         body: JSON.stringify({ name, email_address: email, password }),
       });
       if (response.ok) {
-        console.log("User created successfully");
-        navigate("/dashboard");
+        const user = await response.json();
+        navigate("/fitnesssurvey", { state: { user } });
       } else {
         const errorMsg = await response.json();
         setError(errorMsg.message || "An error occurred. Please try again.");

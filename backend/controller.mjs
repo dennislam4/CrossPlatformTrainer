@@ -82,6 +82,33 @@ app.get("/exercises", async (req, res) => {
   }
 });
 
+// CREATE userprofile (from fitness survey)
+app.post("/createprofile", async (req, res) => {
+  const newUserData = {
+    email_address: req.body.email,
+    password: req.body.password,
+    name: req.body.name,
+    age: req.body.age,
+    weight: req.body.weight,
+    height: req.body.height,
+    height_unit: req.body.height_unit,
+    weight_unit: req.body.weight_unit,
+    fitness_level: req.body.fitness_level,
+    fitness_goal: req.body.fitness_goal,
+    body_type: req.body.body_type,
+    height_feet: req.body.height_feet,
+    height_inches: req.body.height_inches,
+    height_meters: req.body.height_meters,
+    height_centimeters: req.body.height_centimeters,
+    avatar: req.body.avatar,
+  };
+  try {
+    const newUser = await fitnessDb.createDocument(User, newUserData);
+    res.status(201).json(newUser);
+  } catch (error) {
+    res.status(400).json({ error: "Could not create user profile." });
+  }
+});
 // RETRIEVE controller ****************************************************
 // GET user by ID
 app.get("/users/:_id", async (req, res) => {
