@@ -67,6 +67,9 @@ const FitnessSurvey = () => {
                         <button className="survey-button" onClick={() => { setFitnessLevel('Beginner'); nextStep(); }}>Beginner</button>
                         <button className="survey-button" onClick={() => { setFitnessLevel('Intermediate'); nextStep(); }}>Intermediate</button>
                         <button className="survey-button" onClick={() => { setFitnessLevel('Advanced'); nextStep(); }}>Advanced</button>
+                        <div>
+                            <button className="survey-nav-button" onClick={previousStep}>Back</button>
+                        </div>
                     </div>
                 );
             // Body Type Survey Question
@@ -77,6 +80,9 @@ const FitnessSurvey = () => {
                         <button className="survey-button" onClick={() => { setBodyType('Ectomorph'); nextStep(); }}>Ectomorph</button>
                         <button className="survey-button" onClick={() => { setBodyType('Mesomorph'); nextStep(); }}>Mesomorph</button>
                         <button className="survey-button" onClick={() => { setBodyType('Endomorph'); nextStep(); }}>Endomorph</button>
+                        <div>
+                            <button className="survey-nav-button" onClick={previousStep}>Back</button>
+                        </div>
                     </div>
                 );
             // Height Survey Question with Imperial and Metric Unit Selection
