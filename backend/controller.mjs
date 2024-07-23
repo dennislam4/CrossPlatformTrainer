@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import * as fitnessDb from "./model.mjs";
 import User from "./userSchema.mjs";
+import Exercise from "./exerciseSchema.mjs";
 
 const PORT = process.env.PORT || 2355;
 const app = express();
@@ -45,6 +46,39 @@ app.post("/signup", async (req, res) => {
     res.status(201).json(newUser);
   } catch (error) {
     res.status(400).json({ error: "Could not create user account." });
+  }
+});
+
+// CREATE weekly workout list
+// get exercises, filtered by fitness_goal, fitness_level, category
+app.get("/exercises", async (req, res) => {
+  const filter = {
+    fitness_goal: req.query.fitness_goal,
+    fitness_level: req.query.fitness_level,
+  };
+
+  if (req.query.fitness_goal === "lose weight") {
+    filter.category = { $in: ["plyometrics", "cardio", "strength"] };
+  } else if (req.query.fitness_goal === "build strength") {
+    filter.category = { $in: ["stength", "powerlifting", "strongman"] };
+  } else if (req.query.fitness_goal === "build endurance") {
+    filter.category = {
+      $in: ["cardio", "strongman", "strength", "plyometrics"],
+    };
+  } else if (req.query.fitness_goal === "build muscle") {
+    filter.category = {
+      $in: ["strength", "powerlifting", "strongman", "olympic weightlifting"],
+    };
+  } else if (req.query.fitness_goal === "increase flexibility") {
+    filter.category = "stretching";
+  }
+
+  try {
+    const exercises = await fitnessDb.getAllDocuments(Exercise, filter);
+    res.status(200).json(exercises);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Request to retrieve exercises failed" });
   }
 });
 
@@ -99,6 +133,7 @@ app.put("/updateprofile", async (req, res) => {
     height_inches: req.body.height_inches,
     height_meters: req.body.height_meters,
     height_centimeters: req.body.height_centimeters,
+    avatar: req.body.avatar,
   };
   try {
     // Update the user document by _id and return the updated document

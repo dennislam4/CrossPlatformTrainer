@@ -31,8 +31,8 @@ const createDocument = async (Model, data) => {
 
 // RETRIEVE models *****************************************
 // Retrieve all records based on a filter and return a promise.
-const getAllDocuments = async (Model, filter) => {
-  const query = Model.find(filter);
+const getAllDocuments = async (Model, filter, limit = 20) => {
+  const query = Model.find(filter).limit(limit);
   return query.exec();
 };
 
