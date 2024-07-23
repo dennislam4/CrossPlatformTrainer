@@ -13,7 +13,7 @@ const userSchema = mongoose.Schema({
   height: { type: Number },
   height_unit: { type: String },
   calculate_as_gender: { type: String },
-  avatar_id: { type: String },
+  avatar: { type: String },
   fitness_level: { type: String },
   fitness_goal: { type: String },
   body_type: { type: String },

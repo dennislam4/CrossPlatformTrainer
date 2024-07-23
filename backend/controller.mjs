@@ -133,6 +133,7 @@ app.put("/updateprofile", async (req, res) => {
     height_inches: req.body.height_inches,
     height_meters: req.body.height_meters,
     height_centimeters: req.body.height_centimeters,
+    avatar: req.body.avatar,
   };
   try {
     // Update the user document by _id and return the updated document
