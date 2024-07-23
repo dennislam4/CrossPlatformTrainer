@@ -14,11 +14,11 @@ npm install
 mv env.example .env
 ```
 4. Edit the `.env` file to replace `<USERNAME>` and `<PASSWORD>` with the values provided to you in a separate message.
-5. In a console window, type:
+
+6. In this console window, type:
 ```shell
 npm start
 ```
 You should see `Successfully connected to MongoDB fitness_trainer collection using Mongoose` in the console window.
 
-**To stop the database server,** press `CTRL-C` in the console from the `backend` directory.
 
