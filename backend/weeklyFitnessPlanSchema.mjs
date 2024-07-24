@@ -9,7 +9,8 @@ const weeklyFitnessPlanSchema = mongoose.Schema({
   workout_4_id: [{ type: String }],
   workout_5_id: [{ type: String }],
   workout_6_id: [{ type: String }],
-  workout_71_id: [{ type: String }],
+  workout_7_id: [{ type: String }],
+  user_id: { type: String },
 });
 
 const WeeklyFitnessPlan = mongoose.model(

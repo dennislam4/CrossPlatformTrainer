@@ -17,7 +17,6 @@ const userSchema = mongoose.Schema({
   fitness_level: { type: String },
   fitness_goal: { type: String },
   body_type: { type: String },
-  weekly_fitness_plan_id: { type: String },
   height_feet: { type: Number },
   height_inches: { type: Number },
   height_meters: { type: Number },
