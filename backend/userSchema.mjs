@@ -10,7 +10,6 @@ const userSchema = mongoose.Schema({
   resting_heartrate: { type: Number },
   weight: { type: Number },
   weight_unit: { type: String },
-  height: { type: Number },
   height_unit: { type: String },
   calculate_as_gender: { type: String },
   avatar: { type: String },

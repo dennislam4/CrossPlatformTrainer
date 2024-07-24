@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./FitnessSurvey.css";
 
@@ -14,7 +14,6 @@ const FitnessSurvey = () => {
   const [step, setStep] = useState(0);
   const [user, setUser] = useState({
     age: "",
-    height: "",
     weight: "",
     fitness_level: "",
     fitness_goal: "",
@@ -35,82 +34,72 @@ const FitnessSurvey = () => {
   const nextStep = () => {
     setStep(step + 1);
   };
+
   const previousStep = () => {
     setStep(step - 1);
   };
 
-  // Set the user state to the signed-in user object if available
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch("/signin", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email_address: newUser?.email_address,
-            password: newUser?.password,
-          }),
-        });
-        if (response.ok) {
-          const fetchedUser = await response.json();
-          setUser((prevUser) => ({
-            ...prevUser,
-            ...fetchedUser,
-            _id: fetchedUser._id || newUser?._id,
-          }));
-        } else {
-          const errorMsg = await response.json();
-          setError(errorMsg.message || "An error occurred. Please try again.");
-        }
-      } catch (error) {
-        setError("An error occurred. Please try again.");
+  const fetchUser = async (userDetails) => {
+    try {
+      const response = await fetch("/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email_address: newUser?.email_address,
+          password: newUser?.password,
+        }),
+      });
+      if (response.ok) {
+        const fetchedUser = await response.json();
+        setUser((prevUser) => ({
+          ...prevUser,
+          ...fetchedUser,
+          _id: fetchedUser._id || userDetails._id,
+        }));
       }
-    };
-
-    if (newUser) {
-      setUser(newUser);
-      fetchUser();
+    } catch (error) {
+      setError("An error occurred. Please try again.");
     }
-  }, [newUser, navigate]);
+  };
 
   // Handle the form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log(`Changing ${name} to ${value}`);
-    setUser({
-      ...user,
-      [name]: value,
-    });
-  };
-  const handleGenderSelection = (gender) => {
     setUser((prevUser) => ({
       ...prevUser,
-      calculate_as_gender: gender,
+      [name]: value,
     }));
-    handleSubmit();
+  };
+
+  const handleGenderSelection = (gender) => {
+    const updatedUser = {
+      ...user,
+      calculate_as_gender: gender,
+    };
+    setUser(updatedUser);
+    fetchUser(updatedUser);
+    handleSubmit(updatedUser);
   };
 
   // Handle the form submission
-  const handleSubmit = async (e) => {
-    const method = user._id ? "PUT" : "POST";
-    const endpoint = user._id ? "/updateprofile" : "/createprofile"; // Adjust endpoints as needed
-
+  const handleSubmit = async (updatedUser) => {
     try {
-      const response = await fetch(endpoint, {
-        method: method,
+      const response = await fetch("/updateprofile", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(user),
+        body: JSON.stringify(updatedUser),
       });
       if (response.ok) {
         setSuccess("User profile updated successfully.");
         setError("");
-        const updatedUser = await response.json();
-        setUser(updatedUser);
-        navigate("/userprofile", { state: { user: updatedUser } });
+        const updatedUserResponse = await response.json();
+        setUser(updatedUserResponse);
+        navigate("/userprofile", { state: { user: updatedUserResponse } });
       } else {
         const errorMsg = await response.json();
         setError(errorMsg.error || "An error occurred during signing in.");
@@ -119,6 +108,7 @@ const FitnessSurvey = () => {
       setError("An error occurred. Please try again.");
     }
   };
+
   // Render the survey steps
   const renderStep = () => {
     switch (step) {
@@ -343,22 +333,28 @@ const FitnessSurvey = () => {
       case 4:
         return (
           <div className="flex flex-col items-center">
-            <h2 className="text-3xl italic">What is your weight?</h2>
-            <input
-              type="number"
-              name="weight"
-              value={user.weight}
-              onChange={handleChange}
-              className="survey-input"
-            />
+            <h2 className="text-3xl italic">What is your Weight?</h2>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Weight:
+              </label>
+              <input
+                type="number"
+                name="weight"
+                value={user.weight}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+            <h2 className="text-3xl italic">Weight Unit:</h2>
             <select
               name="weight_unit"
               value={user.weight_unit}
               onChange={handleChange}
-              className="w-full mt-2 p-2 border border-gray-300 rounded-lg"
+              className="w-full p-2 border border-gray-300 rounded-lg"
             >
-              <option value="lbs">lbs</option>
-              <option value="kgs">kgs</option>
+              <option value="lbs">Pounds (lbs)</option>
+              <option value="kg">Kilograms (kg)</option>
             </select>
             <div className="flex space-x-4">
               <button className="survey-nav-button" onClick={previousStep}>
@@ -373,14 +369,19 @@ const FitnessSurvey = () => {
       case 5:
         return (
           <div className="flex flex-col items-center">
-            <h2 className="text-3xl italic">What is your age?</h2>
-            <input
-              type="number"
-              value={user.age}
-              name="age"
-              onChange={handleChange}
-              className="survey-input"
-            />
+            <h2 className="text-3xl italic">What is your Age?</h2>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Age:
+              </label>
+              <input
+                type="number"
+                name="age"
+                value={user.age}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
             <div className="flex space-x-4">
               <button className="survey-nav-button" onClick={previousStep}>
                 Back

@@ -25,7 +25,6 @@ const UserProfile = () => {
     email_address: "",
     password: "",
     age: "",
-    height: "",
     weight: "",
     fitness_level: "",
     fitness_goal: "",
