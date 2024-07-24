@@ -60,7 +60,6 @@ const FitnessSurvey = () => {
             ...fetchedUser,
             _id: fetchedUser._id || newUser?._id,
           }));
-          navigate("/userprofile", { state: { user: fetchedUser } });
         } else {
           const errorMsg = await response.json();
           setError(errorMsg.message || "An error occurred. Please try again.");
@@ -87,8 +86,6 @@ const FitnessSurvey = () => {
 
   // Handle the form submission
   const handleSubmit = async (e) => {
-    console.dir(user);
-    // If the user exists, just update their profile
     const method = user._id ? "PUT" : "POST";
     const endpoint = user._id ? "/updateprofile" : "/createprofile"; // Adjust endpoints as needed
 
@@ -105,9 +102,10 @@ const FitnessSurvey = () => {
         setError("");
         const updatedUser = await response.json();
         setUser(updatedUser);
+        navigate("/userprofile", { state: { user: updatedUser } });
       } else {
         const errorMsg = await response.json();
-        setError(errorMsg.error || "An error occurred. Please try again.");
+        setError(errorMsg.error || "An error occurred during signing in.");
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
@@ -124,7 +122,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "fitness_goal", value: "lose weight" },
+                  target: { name: "fitness_goal", value: "Lose Weight" },
                 });
                 nextStep();
               }}
@@ -135,7 +133,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "fitness_goal", value: "build strength" },
+                  target: { name: "fitness_goal", value: "Build Strength" },
                 });
                 nextStep();
               }}
@@ -146,7 +144,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "fitness_goal", value: "build endurance" },
+                  target: { name: "fitness_goal", value: "Build Endurance" },
                 });
                 nextStep();
               }}
@@ -157,7 +155,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "fitness_goal", value: "build muscle" },
+                  target: { name: "fitness_goal", value: "Build Muscle" },
                 });
                 nextStep();
               }}
@@ -168,7 +166,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "fitness_goal", value: "flexibility" },
+                  target: { name: "fitness_goal", value: "Flexibility" },
                 });
                 nextStep();
               }}
@@ -185,7 +183,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "fitness_level", value: "beginner" },
+                  target: { name: "fitness_level", value: "Beginner" },
                 });
                 nextStep();
               }}
@@ -196,7 +194,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "fitness_level", value: "intermediate" },
+                  target: { name: "fitness_level", value: "Intermediate" },
                 });
                 nextStep();
               }}
@@ -207,7 +205,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "fitness_level", value: "advanced" },
+                  target: { name: "fitness_level", value: "Advanced" },
                 });
                 nextStep();
               }}
@@ -224,7 +222,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "body_type", value: "ectomorph" },
+                  target: { name: "body_type", value: "Ectomorph" },
                 });
                 nextStep();
               }}
@@ -235,7 +233,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "body_type", value: "mesomorph" },
+                  target: { name: "body_type", value: "Mesomorph" },
                 });
                 nextStep();
               }}
@@ -246,7 +244,7 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "body_type", value: "endomorph" },
+                  target: { name: "body_type", value: "Endomorph" },
                 });
                 nextStep();
               }}
