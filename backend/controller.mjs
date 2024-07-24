@@ -123,6 +123,19 @@ app.get("/users/:_id", async (req, res) => {
   }
 });
 
+// GET workout card by ID
+app.get("/workoutcards/:_id", async (req, res) => {
+  try {
+    const workoutcard = fitnessDb.getModelById(WorkoutCard, req.params._id);
+    if (!workoutcard) {
+      return res.status(404).json({ error: "Workout card not found" });
+    }
+    res.json(workoutcard);
+  } catch (error) {
+    res.status(400).json({ error: "Request to retrieve workout card failed" });
+  }
+});
+
 // DELETE Controller ******************************
 app.delete("/exercises/:_id", (req, res) => {
   fitnessDb
@@ -179,6 +192,38 @@ app.put("/updateprofile", async (req, res) => {
   }
 });
 
+// UPDATE workout card
+app.put("/workoutcards/:_id", async (req, res) => {
+  const _id = req.params._id;
+  const revisedWorkoutCardData = {
+    exercise_name: req.body.exercise_name,
+    reps: req.body.reps,
+    sets: req.body.sets,
+    weight: req.body.weight,
+    weight_unit: req.body.weight_unit,
+    intensity: req.body.intensity,
+    time: req.body.time,
+    time_unit: req.body.time_unit,
+    is_completed: req.body.is_completed,
+  };
+  try {
+    // Update the workout card document by _id and return the updated document
+    const updatedWorkoutCard = await fitnessDb.findByIdAndUpdate(
+      WorkoutCard,
+      _id,
+      revisedWorkoutCardData
+    );
+
+    if (updatedWorkoutCard) {
+      res.status(200).json(updatedWorkoutCard);
+    } else {
+      res.status(404).json({ error: "Workout card not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "Request to update this workout card failed" });
+  }
+}); 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
 });
