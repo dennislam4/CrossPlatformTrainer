@@ -22,7 +22,7 @@ const UserProfile = () => {
   const [user, setUser] = useState({
     avatar: avatars[0].src,
     name: "",
-    email: "",
+    email_address: "",
     password: "",
     age: "",
     height: "",
@@ -144,7 +144,7 @@ const UserProfile = () => {
           <input
             type="email"
             name="email"
-            value={user.email}
+            value={user.email_address}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-lg"
           />
@@ -187,7 +187,7 @@ const UserProfile = () => {
             <option value="metric">Metric (m/cm)</option>
           </select>
         </div>
-        {user.heightUnit === "imperial" ? (
+        {user.height_unit === "imperial" ? (
           <>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
