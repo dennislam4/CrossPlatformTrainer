@@ -163,7 +163,7 @@ app.get("/workoutcards/:_id", async (req, res) => {
 // DELETE Controller ******************************
 app.delete("/exercises/:_id", (req, res) => {
   fitnessDb
-    .deleteExerciseById(req.params._id)
+    .deleteModelById("User", req.params._id)
     .then((deletedCount) => {
       if (deletedCount === 1) {
         res.status(204).send();
@@ -177,6 +177,24 @@ app.delete("/exercises/:_id", (req, res) => {
     });
 });
 
+// DELETE workout card
+app.delete("/workoutcards/:_id", (req, res) => {
+  fitnessDb
+    .deleteModelById("WorkoutCard", req.params._id)
+    .then((deletedCount) => {
+      if (deletedCount === 1) {
+        res.status(204).send();
+      } else {
+        res.status(404).json({ Error: "This workout card not found" });
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res
+        .status(400)
+        .send({ error: "Request to delete this workout card failed" });
+    });
+});
 // UPDATE controller ************************************
 app.put("/updateprofile", async (req, res) => {
   const _id = req.body._id;
