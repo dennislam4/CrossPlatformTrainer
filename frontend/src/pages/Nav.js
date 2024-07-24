@@ -15,9 +15,11 @@ function Nav() {
         <button className="w-full p-2.5 mt-14 italic bg-black text-white border border-black border-solid shadow-sm">
           Workout Plan
         </button>
+        <Link to="/WorkoutCard">
         <button className="w-full p-2.5 mt-3 italic bg-black text-white border border-black border-solid shadow-sm">
           Workout Card
         </button>
+        </Link>
         <button className="w-full p-2.5 mt-3 italic whitespace-nowrap bg-black text-white border border-black border-solid shadow-sm">
           Progress
         </button>
