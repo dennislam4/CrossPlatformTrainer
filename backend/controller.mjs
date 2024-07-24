@@ -4,6 +4,7 @@ import express from "express";
 import * as fitnessDb from "./model.mjs";
 import User from "./userSchema.mjs";
 import Exercise from "./exerciseSchema.mjs";
+import WorkoutCard from "./workoutCardSchema.mjs";
 
 const PORT = process.env.PORT || 2355;
 const app = express();
@@ -150,12 +151,19 @@ app.get("/users/:_id", async (req, res) => {
 // GET workout card by ID
 app.get("/workoutcards/:_id", async (req, res) => {
   try {
-    const workoutcard = fitnessDb.getModelById(WorkoutCard, req.params._id);
+    console.log(`Fetching workout card with ID: ${req.params._id}`);
+    const workoutcard = await fitnessDb.getModelById(
+      WorkoutCard,
+      req.params._id
+    );
     if (!workoutcard) {
+      console.log("Workout card not found");
       return res.status(404).json({ error: "Workout card not found" });
     }
+    console.log("Workout card found:", workoutcard);
     res.json(workoutcard);
   } catch (error) {
+    console.error("Error fetching workout card:", error);
     res.status(400).json({ error: "Request to retrieve workout card failed" });
   }
 });
@@ -163,7 +171,7 @@ app.get("/workoutcards/:_id", async (req, res) => {
 // DELETE Controller ******************************
 app.delete("/exercises/:_id", (req, res) => {
   fitnessDb
-    .deleteModelById("User", req.params._id)
+    .deleteModelById(Exercise, req.params._id)
     .then((deletedCount) => {
       if (deletedCount === 1) {
         res.status(204).send();
@@ -180,7 +188,7 @@ app.delete("/exercises/:_id", (req, res) => {
 // DELETE workout card
 app.delete("/workoutcards/:_id", (req, res) => {
   fitnessDb
-    .deleteModelById("WorkoutCard", req.params._id)
+    .deleteModelById(WorkoutCard, req.params._id)
     .then((deletedCount) => {
       if (deletedCount === 1) {
         res.status(204).send();
@@ -248,15 +256,17 @@ app.put("/workoutcards/:_id", async (req, res) => {
     time_unit: req.body.time_unit,
     is_completed: req.body.is_completed,
   };
+
   try {
-    // Update the workout card document by _id and return the updated document
-    const updatedWorkoutCard = await fitnessDb.findByIdAndUpdate(
+    const result = await fitnessDb.updateDocument(
       WorkoutCard,
       _id,
       revisedWorkoutCardData
     );
 
-    if (updatedWorkoutCard) {
+    if (result.modifiedCount > 0) {
+      // Fetch the updated document to return
+      const updatedWorkoutCard = await WorkoutCard.findById(_id);
       res.status(200).json(updatedWorkoutCard);
     } else {
       res.status(404).json({ error: "Workout card not found" });
@@ -268,6 +278,7 @@ app.put("/workoutcards/:_id", async (req, res) => {
       .json({ error: "Request to update this workout card failed" });
   }
 });
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
 });
