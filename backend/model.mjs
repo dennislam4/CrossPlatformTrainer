@@ -48,10 +48,10 @@ const deleteModelById = async (Model, _id) => {
   return result.deletedCount;
 };
 
-// REPLACE model *****************************************************
+// Update model *****************************************************
 const updateDocument = async (Model, _id, updateData) => {
-  const result = await Model.replaceOne({ _id: _id }, updateData);
-  return result.modifiedCount;
+  const result = await Model.updateOne({ _id: _id }, { $set: updateData });
+  return result;
 };
 
 // Export variables for use in the controller file.

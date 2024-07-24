@@ -4,6 +4,7 @@ import express from "express";
 import * as fitnessDb from "./model.mjs";
 import User from "./userSchema.mjs";
 import Exercise from "./exerciseSchema.mjs";
+import WorkoutCard from "./workoutCardSchema.mjs";
 
 const PORT = process.env.PORT || 2355;
 const app = express();
@@ -108,6 +109,30 @@ app.post("/createprofile", async (req, res) => {
     res.status(400).json({ error: "Could not create user profile." });
   }
 });
+// CREATE workout card
+app.post("/workoutcards", async (req, res) => {
+  const newWorkoutCardData = {
+    exercise_name: req.body.exercise_name,
+    reps: req.body.reps,
+    sets: req.body.sets,
+    weight: req.body.weight,
+    weight_unit: req.body.weight_unit,
+    intensity: req.body.intensity,
+    time: req.body.time,
+    time_unit: req.body.time_unit,
+    is_completed: "false",
+  };
+  try {
+    const newWorkoutCard = await fitnessDb.createDocument(
+      WorkoutCard,
+      newWorkoutCardData
+    );
+    res.status(201).json(newWorkoutCard);
+  } catch (error) {
+    res.status(400).json({ error: "Could not create workout card." });
+  }
+});
+
 // RETRIEVE controller ****************************************************
 // GET user by ID
 app.get("/users/:_id", async (req, res) => {
@@ -123,10 +148,30 @@ app.get("/users/:_id", async (req, res) => {
   }
 });
 
+// GET workout card by ID
+app.get("/workoutcards/:_id", async (req, res) => {
+  try {
+    console.log(`Fetching workout card with ID: ${req.params._id}`);
+    const workoutcard = await fitnessDb.getModelById(
+      WorkoutCard,
+      req.params._id
+    );
+    if (!workoutcard) {
+      console.log("Workout card not found");
+      return res.status(404).json({ error: "Workout card not found" });
+    }
+    console.log("Workout card found:", workoutcard);
+    res.json(workoutcard);
+  } catch (error) {
+    console.error("Error fetching workout card:", error);
+    res.status(400).json({ error: "Request to retrieve workout card failed" });
+  }
+});
+
 // DELETE Controller ******************************
 app.delete("/exercises/:_id", (req, res) => {
   fitnessDb
-    .deleteExerciseById(req.params._id)
+    .deleteModelById(Exercise, req.params._id)
     .then((deletedCount) => {
       if (deletedCount === 1) {
         res.status(204).send();
@@ -140,6 +185,24 @@ app.delete("/exercises/:_id", (req, res) => {
     });
 });
 
+// DELETE workout card
+app.delete("/workoutcards/:_id", (req, res) => {
+  fitnessDb
+    .deleteModelById(WorkoutCard, req.params._id)
+    .then((deletedCount) => {
+      if (deletedCount === 1) {
+        res.status(204).send();
+      } else {
+        res.status(404).json({ Error: "This workout card not found" });
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res
+        .status(400)
+        .send({ error: "Request to delete this workout card failed" });
+    });
+});
 // UPDATE controller ************************************
 app.put("/updateprofile", async (req, res) => {
   const _id = req.body._id;
@@ -176,6 +239,43 @@ app.put("/updateprofile", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: "Request to update this user failed" });
+  }
+});
+
+// UPDATE workout card
+app.put("/workoutcards/:_id", async (req, res) => {
+  const _id = req.params._id;
+  const revisedWorkoutCardData = {
+    exercise_name: req.body.exercise_name,
+    reps: req.body.reps,
+    sets: req.body.sets,
+    weight: req.body.weight,
+    weight_unit: req.body.weight_unit,
+    intensity: req.body.intensity,
+    time: req.body.time,
+    time_unit: req.body.time_unit,
+    is_completed: req.body.is_completed,
+  };
+
+  try {
+    const result = await fitnessDb.updateDocument(
+      WorkoutCard,
+      _id,
+      revisedWorkoutCardData
+    );
+
+    if (result.modifiedCount > 0) {
+      // Fetch the updated document to return
+      const updatedWorkoutCard = await WorkoutCard.findById(_id);
+      res.status(200).json(updatedWorkoutCard);
+    } else {
+      res.status(404).json({ error: "Workout card not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(400)
+      .json({ error: "Request to update this workout card failed" });
   }
 });
 
