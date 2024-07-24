@@ -78,10 +78,18 @@ const FitnessSurvey = () => {
   // Handle the form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Changing ${name} to ${value}`);
     setUser({
       ...user,
       [name]: value,
     });
+  };
+  const handleGenderSelection = (gender) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      calculate_as_gender: gender,
+    }));
+    handleSubmit();
   };
 
   // Handle the form submission
@@ -389,27 +397,13 @@ const FitnessSurvey = () => {
             <h2 className="text-3xl italic">What is your gender?</h2>
             <button
               className="survey-button"
-              name="calculate_as_gender"
-              value={user.calculate_as_gender}
-              onClick={() => {
-                handleChange({
-                  target: { name: "calculate_as_gender", value: "male" },
-                });
-                handleSubmit();
-              }}
+              onClick={() => handleGenderSelection("male")}
             >
               Male
             </button>
             <button
               className="survey-button"
-              name="calculate_as_gender"
-              value={user.calculate_as_gender}
-              onClick={() => {
-                handleChange({
-                  target: { name: "calculate_as_gender", value: "female" },
-                });
-                handleSubmit();
-              }}
+              onClick={() => handleGenderSelection("female")}
             >
               Female
             </button>
