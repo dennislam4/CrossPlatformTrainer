@@ -108,6 +108,30 @@ app.post("/createprofile", async (req, res) => {
     res.status(400).json({ error: "Could not create user profile." });
   }
 });
+// CREATE workout card
+app.post("/workoutcards", async (req, res) => {
+  const newWorkoutCardData = {
+    exercise_name: req.body.exercise_name,
+    reps: req.body.reps,
+    sets: req.body.sets,
+    weight: req.body.weight,
+    weight_unit: req.body.weight_unit,
+    intensity: req.body.intensity,
+    time: req.body.time,
+    time_unit: req.body.time_unit,
+    is_completed: "false",
+  };
+  try {
+    const newWorkoutCard = await fitnessDb.createDocument(
+      WorkoutCard,
+      newWorkoutCardData
+    );
+    res.status(201).json(newWorkoutCard);
+  } catch (error) {
+    res.status(400).json({ error: "Could not create workout card." });
+  }
+});
+
 // RETRIEVE controller ****************************************************
 // GET user by ID
 app.get("/users/:_id", async (req, res) => {
@@ -221,9 +245,11 @@ app.put("/workoutcards/:_id", async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: "Request to update this workout card failed" });
+    res
+      .status(400)
+      .json({ error: "Request to update this workout card failed" });
   }
-}); 
+});
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
 });
