@@ -5,13 +5,19 @@ const DailyWorkoutList = () => {
   const [workouts, setWorkouts] = useState([]);
   const [error, setError] = useState(null);
 
-  // Use the useLocation hook to access the user object passed from the SignIn component
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const userId = queryParams.get("user_id");
+
   useEffect(() => {
+    if (!userId) return; // Exit if userId is not present
+
+    // handle request cancellation
+    const controller = new AbortController();
+    const { signal } = controller;
+
     // Fetch daily workouts filtered by the signed-in user's ID
-    fetch(`/daily-workouts?user_id=${userId}`)
+    fetch(`/daily-workouts?user_id=${userId}`, { signal })
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -20,10 +26,18 @@ const DailyWorkoutList = () => {
       })
       .then((data) => setWorkouts(data))
       .catch((error) => {
-        console.error("Error encountering data fetch:", error);
-        setError("Error encountering data fetch. Please try again.");
+        if (error.name === "AbortError") {
+          // Handle fetch abort (optional)
+          console.log("Fetch aborted");
+        } else {
+          console.error("Error encountering data fetch:", error);
+          setError("Error encountering data fetch. Please try again.");
+        }
       });
-  });
+
+    // Cleanup function to abort the fetch request on component unmount
+    return () => controller.abort();
+  }, [userId]); // Add userId to the dependency array
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
