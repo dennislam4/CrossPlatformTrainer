@@ -1,29 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-const DailyWorkoutList = () => {
+const WeeklyFitnessPlan = () => {
   const [workouts, setWorkouts] = useState([]);
   const [error, setError] = useState(null);
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const userId = queryParams.get("user_id");
-  const day = queryParams.get("day"); // Extract day from query parameters
 
   useEffect(() => {
     if (!userId) return; // Exit if userId is not present
 
-    // Handle request cancellation
+    // handle request cancellation
     const controller = new AbortController();
     const { signal } = controller;
 
-    // Build the query string with both userId and day
-    const query = new URLSearchParams();
-    if (userId) query.append("user_id", userId);
-    if (day) query.append("day", day);
-
-    // Fetch daily workouts filtered by userId and optionally by day
-    fetch(`/daily-workouts?${query.toString()}`, { signal })
+    // Fetch daily workouts filtered by the signed-in user's ID
+    fetch(`/daily-workouts?user_id=${userId}`, { signal })
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -43,7 +37,7 @@ const DailyWorkoutList = () => {
 
     // Cleanup function to abort the fetch request on component unmount
     return () => controller.abort();
-  }, [userId, day]); // Add day to the dependency array
+  }, [userId]); // Add userId to the dependency array
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
@@ -53,8 +47,9 @@ const DailyWorkoutList = () => {
     <div className="flex flex-col justify-center px-9 py-20 mx-auto w-full text-xl bg-lime-200 border border-black border-solid max-w-[800px]">
       <div className="flex flex-col px-3 pt-9 pb-20 mt-10 w-full bg-white">
         <div className="self-center text-5xl italic font-black text-black mb-10">
-          Daily Workout List
+          Weekly Fitness Plan
         </div>
+        {workouts.map((workout, index) => (
           <div key={index} className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">{workout.name}</h2>
             <ul className="list-disc pl-5">
@@ -75,11 +70,11 @@ const DailyWorkoutList = () => {
               )}
             </ul>
           </div>
-        ))
+        ))}
         {error && <div className="text-red-500 mt-4">{error}</div>}
       </div>
     </div>
   );
 };
 
-export default DailyWorkoutList;
+export default WeeklyFitnessPlan;

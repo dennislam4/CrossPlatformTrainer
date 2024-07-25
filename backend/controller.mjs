@@ -266,8 +266,8 @@ app.get("/workoutcards/:_id", async (req, res) => {
   }
 });
 
-// GET daily Workout list
-app.get("/daily-workouts", async (req, res) => {
+// GET WeeklyFitnessPlan list
+app.get("/fitnessplan", async (req, res) => {
   try {
     const { user_id } = req.query; // Extract user_id from query parameters
 
@@ -280,6 +280,27 @@ app.get("/daily-workouts", async (req, res) => {
   } catch (error) {
     console.error("Error fetching workouts:", error);
     res.status(500).json({ error: "Internal Server Error" }); // Send error response
+  }
+});
+
+// GET daily workout list
+app.get("/daily-workouts", async (req, res) => {
+  try {
+    const { user_id, day } = req.query;
+    const query = {};
+
+    if (user_id) query.user_id = user_id;
+    if (day) query.name = day;
+
+    const workout = await DailyWorkout.findOne(query);
+    if (!workout) {
+      return res.status(404).json({ error: "Workout not found" });
+    }
+
+    res.json(workout);
+  } catch (error) {
+    console.error("Error fetching workout:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
