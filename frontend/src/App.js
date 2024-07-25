@@ -8,7 +8,8 @@ import SignUp from "./pages/SignUp.js";
 import UserProfile from "./pages/UserProfile.js";
 import Nav from "./pages/Nav.js";
 import FitnessSurvey from "./pages/FitnessSurvey";
-import WorkoutCard from './pages/WorkoutCard.js'
+import WorkoutCard from "./pages/WorkoutCard.js";
+import DailyWorkoutList from "./pages/DailyWorkoutList.js";
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
         <Route path="/userprofile" element={<UserProfile />} />
         <Route path="/fitnesssurvey" element={<FitnessSurvey />} />
         <Route path="/WorkoutCard" element={<WorkoutCard />} />
-        <Route path="/dailyworkoutlist" element={<DailyWorkoutList />} />
+        <Route path="/daily-workouts" element={<DailyWorkoutList />} />
       </Routes>
     </Router>
   );

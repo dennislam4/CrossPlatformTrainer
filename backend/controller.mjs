@@ -168,6 +168,7 @@ app.post("/createWeeklyPlan", async (req, res) => {
               time: 0,
               time_unit: "seconds",
               is_completed: false,
+              user_id: user._id,
             });
             return workoutCard.save();
           })
@@ -179,6 +180,7 @@ app.post("/createWeeklyPlan", async (req, res) => {
       const dailyWorkout = new DailyWorkout({
         name: getDayName(i),
         force: selectedForce,
+        user_id: user._id,
         workout_card_1_id: dailyWorkoutCards[0]?._id.toString() || null,
         workout_card_2_id: dailyWorkoutCards[1]?._id.toString() || null,
         workout_card_3_id: dailyWorkoutCards[2]?._id.toString() || null,
@@ -261,6 +263,23 @@ app.get("/workoutcards/:_id", async (req, res) => {
   } catch (error) {
     console.error("Error fetching workout card:", error);
     res.status(400).json({ error: "Request to retrieve workout card failed" });
+  }
+});
+
+// GET daily Workout list
+app.get("/daily-workouts", async (req, res) => {
+  try {
+    const { user_id } = req.query; // Extract user_id from query parameters
+
+    // If user_id is provided, filter workouts by user_id
+    const query = user_id ? { user_id: user_id } : {};
+
+    const workouts = await DailyWorkout.find(query); // Fetch workouts from the database
+
+    res.json(workouts); // Send the filtered workouts as a JSON response
+  } catch (error) {
+    console.error("Error fetching workouts:", error);
+    res.status(500).json({ error: "Internal Server Error" }); // Send error response
   }
 });
 
