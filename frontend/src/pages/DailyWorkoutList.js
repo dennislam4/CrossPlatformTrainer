@@ -49,7 +49,6 @@ const DailyWorkoutList = () => {
         <div className="self-center text-5xl italic font-black text-black mb-10">
           Daily Workout List
         </div>
-        {workouts.map((workout, index) => (
           <div key={index} className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">{workout.name}</h2>
             <ul className="list-disc pl-5">
@@ -70,7 +69,7 @@ const DailyWorkoutList = () => {
               )}
             </ul>
           </div>
-        ))}
+        ))
         {error && <div className="text-red-500 mt-4">{error}</div>}
       </div>
     </div>
