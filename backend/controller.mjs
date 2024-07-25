@@ -4,6 +4,8 @@ import express from "express";
 import * as fitnessDb from "./model.mjs";
 import User from "./userSchema.mjs";
 import Exercise from "./exerciseSchema.mjs";
+import DailyWorkout from "./dailyWorkoutSchema.mjs";
+import WeeklyFitnessPlan from "./weeklyFitnessPlanSchema.mjs";
 import WorkoutCard from "./workoutCardSchema.mjs";
 
 const PORT = process.env.PORT || 2355;
@@ -50,36 +52,153 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-// CREATE weekly workout list
-// get exercises, filtered by fitness_goal, fitness_level, category
-app.get("/exercises", async (req, res) => {
-  const filter = {
-    fitness_goal: req.query.fitness_goal,
-    fitness_level: req.query.fitness_level,
-  };
+// helper method to group exercises for a weekly plan
+const groupExercisesByForce = (exercises) => {
+  return exercises.reduce((groupedExercises, exercise) => {
+    const { force } = exercise;
+    if (!groupedExercises[force]) {
+      groupedExercises[force] = [];
+    }
+    groupedExercises[force].push(exercise);
+    return groupedExercises;
+  }, {});
+};
 
-  if (req.query.fitness_goal === "lose weight") {
-    filter.category = { $in: ["plyometrics", "cardio", "strength"] };
-  } else if (req.query.fitness_goal === "build strength") {
-    filter.category = { $in: ["stength", "powerlifting", "strongman"] };
-  } else if (req.query.fitness_goal === "build endurance") {
-    filter.category = {
-      $in: ["cardio", "strongman", "strength", "plyometrics"],
-    };
-  } else if (req.query.fitness_goal === "build muscle") {
-    filter.category = {
-      $in: ["strength", "powerlifting", "strongman", "olympic weightlifting"],
-    };
-  } else if (req.query.fitness_goal === "increase flexibility") {
-    filter.category = "stretching";
+// helper method for day name
+const getDayName = (number) => {
+  const dayNames = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  return dayNames[number - 1];
+};
+
+// CREATE weekly workout list. This also creates the daily workout lists and the workout cards.
+app.post("/createWeeklyPlan", async (req, res) => {
+  const { user } = req.body;
+
+  // Validate input
+  if (!user) {
+    return res.status(400).json({ error: "User object is required." });
+  }
+
+  if (!user.fitness_goal || !user.fitness_level || !user._id) {
+    return res.status(400).json({
+      error: "User fitness_goal, fitness_level, and _id are required.",
+    });
   }
 
   try {
-    const exercises = await fitnessDb.getAllDocuments(Exercise, filter);
-    res.status(200).json(exercises);
+    // Determine filter based on user's fitness goal
+    const filter = {
+      fitness_goal: user.fitness_goal,
+      fitness_level: user.fitness_level,
+    };
+
+    if (user.fitness_goal === "lose weight") {
+      filter.category = { $in: ["plyometrics", "cardio", "strength"] };
+    } else if (user.fitness_goal === "build strength") {
+      filter.category = { $in: ["strength", "powerlifting", "strongman"] };
+    } else if (user.fitness_goal === "build endurance") {
+      filter.category = {
+        $in: ["cardio", "strongman", "strength", "plyometrics"],
+      };
+    } else if (user.fitness_goal === "build muscle") {
+      filter.category = {
+        $in: ["strength", "powerlifting", "strongman", "olympic weightlifting"],
+      };
+    } else if (user.fitness_goal === "increase flexibility") {
+      filter.category = "stretching";
+    }
+
+    // Fetch exercises based on the filter
+    const exercises = await Exercise.find(filter);
+
+    // Initialize weekly plan
+    const weeklyPlan = {
+      workout_1_id: null,
+      workout_2_id: null,
+      workout_3_id: null,
+      workout_4_id: null,
+      workout_5_id: null,
+      workout_6_id: null,
+      workout_7_id: null,
+      user_id: user._id,
+    };
+
+    // Determine number of cards based on fitness level
+    const number_of_cards =
+      user.fitness_level === "Intermediate"
+        ? 4
+        : user.fitness_level === "Advanced"
+        ? 5
+        : 3;
+
+    // Create daily workouts and workout cards
+    for (let i = 1; i <= 7; i++) {
+      const groupedExercises = groupExercisesByForce(exercises);
+      const dailyWorkoutCards = [];
+      let selectedForce = null;
+
+      // Generate workout cards for each force group
+      for (const force in groupedExercises) {
+        if (selectedForce == null) {
+          selectedForce = force;
+        }
+        const forceExercises = groupedExercises[force].slice(
+          0,
+          number_of_cards
+        );
+
+        // Create workout cards
+        const createdCards = await Promise.all(
+          forceExercises.map((exercise) => {
+            const workoutCard = new WorkoutCard({
+              exercise_name: exercise.name,
+              reps: 10,
+              sets: 3,
+              weight: 0,
+              weight_unit: "lbs",
+              intensity: "medium",
+              time: 0,
+              time_unit: "seconds",
+              is_completed: false,
+            });
+            return workoutCard.save();
+          })
+        );
+        dailyWorkoutCards.push(...createdCards);
+      }
+
+      // Create a daily workout with specific workout card IDs
+      const dailyWorkout = new DailyWorkout({
+        name: getDayName(i),
+        force: selectedForce,
+        workout_card_1_id: dailyWorkoutCards[0]?._id.toString() || null,
+        workout_card_2_id: dailyWorkoutCards[1]?._id.toString() || null,
+        workout_card_3_id: dailyWorkoutCards[2]?._id.toString() || null,
+        workout_card_4_id: dailyWorkoutCards[3]?._id.toString() || null,
+        workout_card_5_id: dailyWorkoutCards[4]?._id.toString() || null,
+      });
+      const savedDailyWorkout = await dailyWorkout.save();
+
+      // Add created daily workout to the weekly plan
+      const workoutKey = `workout_${i}_id`;
+      weeklyPlan[workoutKey] = savedDailyWorkout._id.toString();
+    }
+
+    // Save the weekly plan
+    const newWeeklyPlan = new WeeklyFitnessPlan(weeklyPlan);
+    await newWeeklyPlan.save();
+    res.status(201).json(newWeeklyPlan);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Request to retrieve exercises failed" });
+    res.status(400).json({ error: "Could not create weekly plan." });
   }
 });
 
@@ -107,29 +226,6 @@ app.post("/createprofile", async (req, res) => {
     res.status(201).json(newUser);
   } catch (error) {
     res.status(400).json({ error: "Could not create user profile." });
-  }
-});
-// CREATE workout card
-app.post("/workoutcards", async (req, res) => {
-  const newWorkoutCardData = {
-    exercise_name: req.body.exercise_name,
-    reps: req.body.reps,
-    sets: req.body.sets,
-    weight: req.body.weight,
-    weight_unit: req.body.weight_unit,
-    intensity: req.body.intensity,
-    time: req.body.time,
-    time_unit: req.body.time_unit,
-    is_completed: "false",
-  };
-  try {
-    const newWorkoutCard = await fitnessDb.createDocument(
-      WorkoutCard,
-      newWorkoutCardData
-    );
-    res.status(201).json(newWorkoutCard);
-  } catch (error) {
-    res.status(400).json({ error: "Could not create workout card." });
   }
 });
 

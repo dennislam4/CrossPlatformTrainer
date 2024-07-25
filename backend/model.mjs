@@ -32,7 +32,10 @@ const createDocument = async (Model, data) => {
 // RETRIEVE models *****************************************
 // Retrieve all records based on a filter and return a promise.
 const getAllDocuments = async (Model, filter, limit = 20) => {
-  const query = Model.find(filter).limit(limit);
+  const query = Model.aggregate([
+    { $match: filter }, // Match all documents based on the filter
+    { $sample: { size: limit } }, // Randomly select the specified number of documents
+  ]);
   return query.exec();
 };
 
