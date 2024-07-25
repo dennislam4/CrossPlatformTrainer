@@ -49,7 +49,7 @@ const DailyWorkoutList = () => {
         <div className="self-center text-5xl italic font-black text-black mb-10">
           Daily Workout List
         </div>
-          <div key={index} className="mb-8">
+          <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">{workout.name}</h2>
             <ul className="list-disc pl-5">
               {workout.workout_card_1_id && (
