@@ -7,11 +7,11 @@ const DailyWorkoutList = () => {
 
   // Use the useLocation hook to access the user object passed from the SignIn component
   const location = useLocation();
-  const signedInUser = location.state?.user;
-
+  const queryParams = new URLSearchParams(location.search);
+  const userId = queryParams.get("user_id");
   useEffect(() => {
     // Fetch daily workouts filtered by the signed-in user's ID
-    fetch(`/daily-workouts?user_id=${signedInUser._id}`)
+    fetch(`/daily-workouts?user_id=${userId}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
