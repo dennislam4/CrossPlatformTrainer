@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const WeeklyFitnessPlan = () => {
   const [workouts, setWorkouts] = useState([]);
   const [error, setError] = useState(null);
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const userId = queryParams.get("user_id");
+  const { userId } = useParams();
 
   useEffect(() => {
     if (!userId) return; // Exit if userId is not present
@@ -16,18 +14,20 @@ const WeeklyFitnessPlan = () => {
     const controller = new AbortController();
     const { signal } = controller;
 
-    // Fetch daily workouts filtered by the signed-in user's ID
-    fetch(`/daily-workouts?user_id=${userId}`, { signal })
+    // Fetch Weekly workout list by the signed-in user's ID
+    fetch(`/fitnessplan/${userId}`, { signal })
       .then((response) => {
         if (response.ok) {
           return response.json();
         }
         throw response;
       })
-      .then((data) => setWorkouts(data))
+      .then((data) => {
+        console.dir(data);
+        setWorkouts(data);
+      })
       .catch((error) => {
         if (error.name === "AbortError") {
-          // Handle fetch abort (optional)
           console.log("Fetch aborted");
         } else {
           console.error("Error encountering data fetch:", error);
@@ -35,9 +35,8 @@ const WeeklyFitnessPlan = () => {
         }
       });
 
-    // Cleanup function to abort the fetch request on component unmount
     return () => controller.abort();
-  }, [userId]); // Add userId to the dependency array
+  }, [userId]); // Add userId to the dependency array to keep fetch from happening constantly
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
@@ -49,28 +48,31 @@ const WeeklyFitnessPlan = () => {
         <div className="self-center text-5xl italic font-black text-black mb-10">
           Weekly Fitness Plan
         </div>
-        {workouts.map((workout, index) => (
-          <div key={index} className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">{workout.name}</h2>
-            <ul className="list-disc pl-5">
-              {workout.workout_card_1_id && (
-                <li>Workout Card 1 ID: {workout.workout_card_1_id}</li>
-              )}
-              {workout.workout_card_2_id && (
-                <li>Workout Card 2 ID: {workout.workout_card_2_id}</li>
-              )}
-              {workout.workout_card_3_id && (
-                <li>Workout Card 3 ID: {workout.workout_card_3_id}</li>
-              )}
-              {workout.workout_card_4_id && (
-                <li>Workout Card 4 ID: {workout.workout_card_4_id}</li>
-              )}
-              {workout.workout_card_5_id && (
-                <li>Workout Card 5 ID: {workout.workout_card_5_id}</li>
-              )}
-            </ul>
-          </div>
-        ))}
+        <div className="mb-8">
+          <ul className="list-disc pl-5">
+            {workouts.workout_1_id && (
+              <li>Daily Workout 1 ID: {workouts.workout_1_id}</li>
+            )}
+            {workouts.workout_2_id && (
+              <li>Daily Workout 2 ID: {workouts.workout_2_id}</li>
+            )}
+            {workouts.workout_3_id && (
+              <li>Daily Workout 3 ID: {workouts.workout_3_id}</li>
+            )}
+            {workouts.workout_4_id && (
+              <li>Daily Workout 4 ID: {workouts.workout_4_id}</li>
+            )}
+            {workouts.workout_5_id && (
+              <li>Daily Workout 5 ID: {workouts.workout_5_id}</li>
+            )}
+            {workouts.workout_6_id && (
+              <li>Daily Workout 6 ID: {workouts.workout_6_id}</li>
+            )}
+            {workouts.workout_7_id && (
+              <li>Daily Workout 7 ID: {workouts.workout_7_id}</li>
+            )}
+          </ul>
+        </div>
         {error && <div className="text-red-500 mt-4">{error}</div>}
       </div>
     </div>

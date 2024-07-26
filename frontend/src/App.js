@@ -10,6 +10,7 @@ import Nav from "./pages/Nav.js";
 import FitnessSurvey from "./pages/FitnessSurvey";
 import WorkoutCard from "./pages/WorkoutCard.js";
 import DailyWorkoutList from "./pages/DailyWorkoutList.js";
+import WeeklyFitnessPlan from "./pages/WeeklyFitnessPlan.js";
 import Dashboard from './pages/Dashboard.js'
 
 function App() {
@@ -23,7 +24,11 @@ function App() {
         <Route path="/userprofile" element={<UserProfile />} />
         <Route path="/fitnesssurvey" element={<FitnessSurvey />} />
         <Route path="/WorkoutCard" element={<WorkoutCard />} />
-        <Route path="/daily-workouts" element={<DailyWorkoutList />} />
+        <Route
+          path="/daily-workouts/:userId/:day?"
+          element={<DailyWorkoutList />}
+        />
+        <Route path="/fitnessplan/:userId" element={<WeeklyFitnessPlan />} />
         <Route path="/Dashboard" element={<Dashboard />} />
       </Routes>
     </Router>

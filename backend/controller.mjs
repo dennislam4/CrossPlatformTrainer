@@ -267,14 +267,14 @@ app.get("/workoutcards/:_id", async (req, res) => {
 });
 
 // GET WeeklyFitnessPlan list
-app.get("/fitnessplan", async (req, res) => {
+app.get("/fitnessplan/:_id", async (req, res) => {
   try {
-    const { user_id } = req.query; // Extract user_id from query parameters
+    const { userId } = req.params;
+    const query = {};
 
-    // If user_id is provided, filter workouts by user_id
-    const query = user_id ? { user_id: user_id } : {};
+    if (userId) query.user_id = userId;
 
-    const workouts = await DailyWorkout.find(query); // Fetch workouts from the database
+    const workouts = await WeeklyFitnessPlan.findOne(query); // Fetch workouts from the database
 
     res.json(workouts); // Send the filtered workouts as a JSON response
   } catch (error) {
@@ -284,12 +284,12 @@ app.get("/fitnessplan", async (req, res) => {
 });
 
 // GET daily workout list
-app.get("/daily-workouts", async (req, res) => {
+app.get("/daily-workouts/:userId/:day?", async (req, res) => {
   try {
-    const { user_id, day } = req.query;
+    const { userId, day } = req.params;
     const query = {};
 
-    if (user_id) query.user_id = user_id;
+    if (userId) query.user_id = userId;
     if (day) query.name = day;
 
     const workout = await DailyWorkout.findOne(query);
