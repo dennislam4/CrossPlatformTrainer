@@ -10,6 +10,7 @@ import Nav from "./pages/Nav.js";
 import FitnessSurvey from "./pages/FitnessSurvey";
 import WorkoutCard from "./pages/WorkoutCard.js";
 import DailyWorkoutList from "./pages/DailyWorkoutList.js";
+import Dashboard from './pages/Dashboard.js'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/fitnesssurvey" element={<FitnessSurvey />} />
         <Route path="/WorkoutCard" element={<WorkoutCard />} />
         <Route path="/daily-workouts" element={<DailyWorkoutList />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
