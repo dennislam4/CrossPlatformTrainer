@@ -13,16 +13,18 @@ function Nav() {
           Page
         </div>
         <button className="w-full p-2.5 mt-14 italic bg-black text-white border border-black border-solid shadow-sm">
-          Workout Plan
+          Fitness Plan
         </button>
         <Link to="/WorkoutCard">
         <button className="w-full p-2.5 mt-3 italic bg-black text-white border border-black border-solid shadow-sm">
           Workout Card
         </button>
         </Link>
+        <Link to="/Dashboard">
         <button className="w-full p-2.5 mt-3 italic whitespace-nowrap bg-black text-white border border-black border-solid shadow-sm">
-          Progress
+          Dashboard
         </button>
+        </Link>
         <Link to="/UserProfile">
         <button className="w-full py-2.5 pr-2.5 pl-2.5 mt-3.5 italic bg-black text-white border border-black border-solid shadow-sm">
           Settings
@@ -44,3 +46,4 @@ function Nav() {
 }
 
 export default Nav;
+
