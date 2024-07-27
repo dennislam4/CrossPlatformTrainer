@@ -1,11 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import DailyWorkoutList from "./DailyWorkoutList";
 import { useParams } from "react-router-dom";
 
 const WeeklyFitnessPlan = () => {
   const [workouts, setWorkouts] = useState([]);
   const [error, setError] = useState(null);
-
   const { userId } = useParams();
+  const daysOfWeek = useMemo(
+    () => [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ],
+    []
+  );
 
   useEffect(() => {
     if (!userId) return; // Exit if userId is not present
@@ -22,9 +34,17 @@ const WeeklyFitnessPlan = () => {
         }
         throw response;
       })
-      .then((data) => {
-        console.dir(data);
-        setWorkouts(data);
+      .then(async (data) => {
+        // Fetch detailed workout information for each workout ID
+        const workoutDetails = await Promise.all(
+          data.workouts.map((workoutId, index) => {
+            const day = daysOfWeek[index];
+            return fetch(`/daily-workouts/${workoutId}/${day}`).then((res) =>
+              res.json()
+            );
+          })
+        );
+        setWorkouts(workoutDetails);
       })
       .catch((error) => {
         if (error.name === "AbortError") {
@@ -36,7 +56,7 @@ const WeeklyFitnessPlan = () => {
       });
 
     return () => controller.abort();
-  }, [userId]); // Add userId to the dependency array to keep fetch from happening constantly
+  }, [userId, daysOfWeek]); // Add userId to the dependency array to keep fetch from happening constantly
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
@@ -49,30 +69,22 @@ const WeeklyFitnessPlan = () => {
           Weekly Fitness Plan
         </div>
         <div className="mb-8">
-          <ul className="list-disc pl-5">
-            {workouts.workout_1_id && (
-              <li>Daily Workout 1 ID: {workouts.workout_1_id}</li>
-            )}
-            {workouts.workout_2_id && (
-              <li>Daily Workout 2 ID: {workouts.workout_2_id}</li>
-            )}
-            {workouts.workout_3_id && (
-              <li>Daily Workout 3 ID: {workouts.workout_3_id}</li>
-            )}
-            {workouts.workout_4_id && (
-              <li>Daily Workout 4 ID: {workouts.workout_4_id}</li>
-            )}
-            {workouts.workout_5_id && (
-              <li>Daily Workout 5 ID: {workouts.workout_5_id}</li>
-            )}
-            {workouts.workout_6_id && (
-              <li>Daily Workout 6 ID: {workouts.workout_6_id}</li>
-            )}
-            {workouts.workout_7_id && (
-              <li>Daily Workout 7 ID: {workouts.workout_7_id}</li>
-            )}
-          </ul>
+          {workouts && workouts.length > 0 ? (
+            workouts.map((workout, index) => (
+              <div key={index} className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4">
+                  {daysOfWeek[index]}
+                </h2>
+                <DailyWorkoutList userId={userId} day={daysOfWeek[index]} />
+              </div>
+            ))
+          ) : (
+            <div className="text-center text-xl text-gray-500">
+              No fitness plans available.
+            </div>
+          )}
         </div>
+
         {error && <div className="text-red-500 mt-4">{error}</div>}
       </div>
     </div>

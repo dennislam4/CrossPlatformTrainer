@@ -51,23 +51,16 @@ const DailyWorkoutList = () => {
           Daily Workout List
         </div>
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">{workout.name}</h2>
+          <h2 className="text-2xl font-semibold mb-4">
+            {workout.name}: {workout.force}
+          </h2>
           <ul className="list-disc pl-5">
-            {workout.workout_card_1_id && (
-              <li>Workout Card 1 ID: {workout.workout_card_1_id}</li>
-            )}
-            {workout.workout_card_2_id && (
-              <li>Workout Card 2 ID: {workout.workout_card_2_id}</li>
-            )}
-            {workout.workout_card_3_id && (
-              <li>Workout Card 3 ID: {workout.workout_card_3_id}</li>
-            )}
-            {workout.workout_card_4_id && (
-              <li>Workout Card 4 ID: {workout.workout_card_4_id}</li>
-            )}
-            {workout.workout_card_5_id && (
-              <li>Workout Card 5 ID: {workout.workout_card_5_id}</li>
-            )}
+            {workout.workout_cards &&
+              workout.workout_cards.map((workout_card, index) => (
+                <li key={index}>
+                  Workout Card {index + 1}: {workout_card.exercise_name}
+                </li>
+              ))}
           </ul>
         </div>
         {error && <div className="text-red-500 mt-4">{error}</div>}

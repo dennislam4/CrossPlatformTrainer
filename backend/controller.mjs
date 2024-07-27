@@ -39,12 +39,19 @@ app.post("/signin", async (req, res) => {
 
 // SIGN UP (Create user)
 app.post("/signup", async (req, res) => {
-  const newUserData = {
-    name: req.body.name,
-    email_address: req.body.email_address,
-    password: req.body.password,
-  };
+  const { name, email_address, password } = req.body;
   try {
+    // Check if a user with the same email already exists
+    const existingUser = await User.findOne({ email_address });
+
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists." });
+    }
+    const newUserData = {
+      name,
+      email_address,
+      password,
+    };
     const newUser = await fitnessDb.createDocument(User, newUserData);
     res.status(201).json(newUser);
   } catch (error) {
@@ -115,19 +122,9 @@ app.post("/createWeeklyPlan", async (req, res) => {
     } else if (user.fitness_goal === "increase flexibility") {
       filter.category = "stretching";
     }
-
-    // Fetch exercises based on the filter
     const exercises = await Exercise.find(filter);
-
-    // Initialize weekly plan
     const weeklyPlan = {
-      workout_1_id: null,
-      workout_2_id: null,
-      workout_3_id: null,
-      workout_4_id: null,
-      workout_5_id: null,
-      workout_6_id: null,
-      workout_7_id: null,
+      workouts: [],
       user_id: user._id,
     };
 
@@ -155,7 +152,6 @@ app.post("/createWeeklyPlan", async (req, res) => {
           number_of_cards
         );
 
-        // Create workout cards
         const createdCards = await Promise.all(
           forceExercises.map((exercise) => {
             const workoutCard = new WorkoutCard({
@@ -170,28 +166,29 @@ app.post("/createWeeklyPlan", async (req, res) => {
               is_completed: false,
               user_id: user._id,
             });
+            console.log(`Day ${i} - Created workout card:`, workoutCard);
             return workoutCard.save();
           })
         );
         dailyWorkoutCards.push(...createdCards);
       }
+      if (dailyWorkoutCards.length > number_of_cards) {
+        dailyWorkoutCards.length = number_of_cards;
+      }
+      console.log(`Day ${i} - Created workout cards:`, dailyWorkoutCards);
 
-      // Create a daily workout with specific workout card IDs
+      // Create a daily workout with an array of workout card IDs
       const dailyWorkout = new DailyWorkout({
         name: getDayName(i),
         force: selectedForce,
         user_id: user._id,
-        workout_card_1_id: dailyWorkoutCards[0]?._id.toString() || null,
-        workout_card_2_id: dailyWorkoutCards[1]?._id.toString() || null,
-        workout_card_3_id: dailyWorkoutCards[2]?._id.toString() || null,
-        workout_card_4_id: dailyWorkoutCards[3]?._id.toString() || null,
-        workout_card_5_id: dailyWorkoutCards[4]?._id.toString() || null,
+        workout_cards: dailyWorkoutCards.map((card) => card._id.toString()),
       });
+      console.log(`Daily workout:`, dailyWorkout);
       const savedDailyWorkout = await dailyWorkout.save();
 
       // Add created daily workout to the weekly plan
-      const workoutKey = `workout_${i}_id`;
-      weeklyPlan[workoutKey] = savedDailyWorkout._id.toString();
+      weeklyPlan.workouts.push(savedDailyWorkout._id.toString());
     }
 
     // Save the weekly plan
@@ -232,9 +229,9 @@ app.post("/createprofile", async (req, res) => {
 });
 
 // RETRIEVE controller ****************************************************
-// GET user by ID
-app.get("/users/:_id", async (req, res) => {
-  const userId = req.params._id;
+// GET userprofile by User ID
+app.get("/userprofile", async (req, res) => {
+  const userId = req.params.userId;
   try {
     const user = await fitnessDb.getModelById(User, userId);
     if (!user) {
@@ -246,7 +243,7 @@ app.get("/users/:_id", async (req, res) => {
   }
 });
 
-// GET workout card by ID
+// GET workout card by User ID
 app.get("/workoutcards/:_id", async (req, res) => {
   try {
     console.log(`Fetching workout card with ID: ${req.params._id}`);
@@ -266,7 +263,7 @@ app.get("/workoutcards/:_id", async (req, res) => {
   }
 });
 
-// GET WeeklyFitnessPlan list
+// GET WeeklyFitnessPlan list by User ID
 app.get("/fitnessplan/:_id", async (req, res) => {
   try {
     const { userId } = req.params;
