@@ -1,15 +1,16 @@
 import * as React from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
-function MyComponent() {
+function WorkoutCard() {
   return (
     <div className="flex flex-col justify-center px-9 py-20 mx-auto w-full bg-lime-200 border border-black border-solid max-w-[480px]">
       <div className="flex flex-col pt-3.5 pb-12 pl-5 mt-20 w-full bg-white rounded-[30px]">
         <div className="flex px-px text-4xl font-bold text-black">
           <div className="grow my-auto italic">Workout Card</div>
           <img
+            alt="Loading..."
             loading="lazy"
-            src= "/images/bench.jpg"
+            src="/images/bench.jpg"
             className="shrink-0 aspect-[1.1] w-[95px]"
           />
         </div>
@@ -61,14 +62,14 @@ function MyComponent() {
             Save
           </button>
           <Link to="/Nav">
-          <button className="self-start px-4 py-px mt-2.5 ml-5 text-base italic font-black leading-6 text-white whitespace-nowrap bg-black rounded-lg">
-          Exit
-        </button>
-        </Link>
+            <button className="self-start px-4 py-px mt-2.5 ml-5 text-base italic font-black leading-6 text-white whitespace-nowrap bg-black rounded-lg">
+              Exit
+            </button>
+          </Link>
         </div>
       </div>
     </div>
   );
 }
 
-export default MyComponent;
+export default WorkoutCard;

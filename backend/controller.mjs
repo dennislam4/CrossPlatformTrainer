@@ -107,19 +107,19 @@ app.post("/createWeeklyPlan", async (req, res) => {
       fitness_level: user.fitness_level,
     };
 
-    if (user.fitness_goal === "lose weight") {
+    if (user.fitness_goal === "Lose Weight") {
       filter.category = { $in: ["plyometrics", "cardio", "strength"] };
-    } else if (user.fitness_goal === "build strength") {
+    } else if (user.fitness_goal === "Build Strength") {
       filter.category = { $in: ["strength", "powerlifting", "strongman"] };
-    } else if (user.fitness_goal === "build endurance") {
+    } else if (user.fitness_goal === "Build Endurance") {
       filter.category = {
         $in: ["cardio", "strongman", "strength", "plyometrics"],
       };
-    } else if (user.fitness_goal === "build muscle") {
+    } else if (user.fitness_goal === "Build Muscle") {
       filter.category = {
         $in: ["strength", "powerlifting", "strongman", "olympic weightlifting"],
       };
-    } else if (user.fitness_goal === "increase flexibility") {
+    } else if (user.fitness_goal === "Increase Flexibility") {
       filter.category = "stretching";
     }
     const exercises = await Exercise.find(filter);
@@ -244,12 +244,11 @@ app.get("/userprofile/:userId", async (req, res) => {
 });
 
 // GET workout card by User ID
-app.get("/workoutcards/:_id", async (req, res) => {
+app.get("/workoutcards/:userId", async (req, res) => {
   try {
-    console.log(`Fetching workout card with ID: ${req.params._id}`);
     const workoutcard = await fitnessDb.getModelById(
       WorkoutCard,
-      req.params._id
+      req.params.userId
     );
     if (!workoutcard) {
       console.log("Workout card not found");
@@ -264,7 +263,7 @@ app.get("/workoutcards/:_id", async (req, res) => {
 });
 
 // GET WeeklyFitnessPlan list by User ID
-app.get("/fitnessplan/:_id", async (req, res) => {
+app.get("/fitnessplan/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
     const query = {};
@@ -280,23 +279,24 @@ app.get("/fitnessplan/:_id", async (req, res) => {
   }
 });
 
-// GET daily workout list
-app.get("/daily-workouts/:userId/:day?", async (req, res) => {
+// GET Daily Workout by userId and day
+app.get("/daily-workouts/:userId/:day", async (req, res) => {
   try {
     const { userId, day } = req.params;
-    const query = {};
 
-    if (userId) query.user_id = userId;
-    if (day) query.name = day;
+    // Fetch the daily workout
+    const dailyWorkout = await DailyWorkout.findOne({
+      user_id: userId,
+      name: day,
+    }).populate("workout_cards"); // Populate the workout_cards field with WorkoutCard details
 
-    const workout = await DailyWorkout.findOne(query);
-    if (!workout) {
-      return res.status(404).json({ error: "Workout not found" });
+    if (!dailyWorkout) {
+      return res.status(404).json({ error: "Daily workout not found" });
     }
 
-    res.json(workout);
+    res.json(dailyWorkout);
   } catch (error) {
-    console.error("Error fetching workout:", error);
+    console.error("Error fetching daily workout:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

@@ -18,15 +18,12 @@ const WeeklyFitnessPlan = () => {
     ],
     []
   );
-
   useEffect(() => {
     if (!userId) return; // Exit if userId is not present
 
-    // handle request cancellation
     const controller = new AbortController();
     const { signal } = controller;
 
-    // Fetch Weekly workout list by the signed-in user's ID
     fetch(`/fitnessplan/${userId}`, { signal })
       .then((response) => {
         if (response.ok) {
@@ -35,15 +32,16 @@ const WeeklyFitnessPlan = () => {
         throw response;
       })
       .then(async (data) => {
-        // Fetch detailed workout information for each workout ID
+        console.log("Data received from API:", data); // Log the raw data
         const workoutDetails = await Promise.all(
           data.workouts.map((workoutId, index) => {
             const day = daysOfWeek[index];
-            return fetch(`/daily-workouts/${workoutId}/${day}`).then((res) =>
+            return fetch(`/daily-workouts/${userId}/${day}`).then((res) =>
               res.json()
             );
           })
         );
+        console.log("Workout details:", workoutDetails); // Log the detailed workout information
         setWorkouts(workoutDetails);
       })
       .catch((error) => {
@@ -72,9 +70,6 @@ const WeeklyFitnessPlan = () => {
           {workouts && workouts.length > 0 ? (
             workouts.map((workout, index) => (
               <div key={index} className="mb-8">
-                <h2 className="text-2xl font-semibold mb-4">
-                  {daysOfWeek[index]}
-                </h2>
                 <DailyWorkoutList userId={userId} day={daysOfWeek[index]} />
               </div>
             ))

@@ -153,7 +153,10 @@ const FitnessSurvey = () => {
               className="survey-button"
               onClick={() => {
                 handleChange({
-                  target: { name: "fitness_goal", value: "Flexibility" },
+                  target: {
+                    name: "fitness_goal",
+                    value: "Increase Flexibility",
+                  },
                 });
                 nextStep();
               }}

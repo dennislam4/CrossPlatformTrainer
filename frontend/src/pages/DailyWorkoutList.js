@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 
-const DailyWorkoutList = () => {
-  const [workout, setWorkout] = useState([]);
+const DailyWorkoutList = ({ userId, day }) => {
+  const [workout, setWorkout] = useState({});
   const [error, setError] = useState(null);
 
-  const { userId, day } = useParams();
-
   useEffect(() => {
-    if (!userId) return; // Exit if userId is not present
+    if (!userId || !day) return; // Exit if userId or day is not present
 
     // Handle request cancellation
     const controller = new AbortController();
@@ -36,7 +33,6 @@ const DailyWorkoutList = () => {
         }
       });
 
-    // Cleanup function to abort the fetch request on component unmount
     return () => controller.abort();
   }, [userId, day]);
 
@@ -54,13 +50,14 @@ const DailyWorkoutList = () => {
           <h2 className="text-2xl font-semibold mb-4">
             {workout.name}: {workout.force}
           </h2>
-          <ul className="list-disc pl-5">
-            {workout.workout_cards &&
-              workout.workout_cards.map((workout_card, index) => (
-                <li key={index}>
-                  Workout Card {index + 1}: {workout_card.exercise_name}
-                </li>
-              ))}
+          <ul>
+            {workout.workout_cards && workout.workout_cards.length > 0 ? (
+              workout.workout_cards.map((workout_card) => (
+                <li key={workout_card._id}>{workout_card.exercise_name} </li>
+              ))
+            ) : (
+              <div>No workout cards available for this day.</div>
+            )}
           </ul>
         </div>
         {error && <div className="text-red-500 mt-4">{error}</div>}
