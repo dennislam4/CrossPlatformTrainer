@@ -230,7 +230,7 @@ app.post("/createprofile", async (req, res) => {
 
 // RETRIEVE controller ****************************************************
 // GET userprofile by User ID
-app.get("/userprofile", async (req, res) => {
+app.get("/userprofile/:userId", async (req, res) => {
   const userId = req.params.userId;
   try {
     const user = await fitnessDb.getModelById(User, userId);

@@ -11,7 +11,7 @@ import FitnessSurvey from "./pages/FitnessSurvey";
 import WorkoutCard from "./pages/WorkoutCard.js";
 import DailyWorkoutList from "./pages/DailyWorkoutList.js";
 import WeeklyFitnessPlan from "./pages/WeeklyFitnessPlan.js";
-import Dashboard from './pages/Dashboard.js'
+import Dashboard from "./pages/Dashboard.js";
 
 function App() {
   return (
@@ -21,7 +21,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/Nav" element={<Nav />} />
-        <Route path="/userprofile" element={<UserProfile />} />
+        <Route path="/userprofile/:userId" element={<UserProfile />} />
         <Route path="/fitnesssurvey" element={<FitnessSurvey />} />
         <Route path="/WorkoutCard" element={<WorkoutCard />} />
         <Route
