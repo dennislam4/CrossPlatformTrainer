@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import WorkoutCard from "./WorkoutCard";
 
 const DailyWorkoutList = ({ userId, day }) => {
   const [workout, setWorkout] = useState({});
@@ -14,7 +15,7 @@ const DailyWorkoutList = ({ userId, day }) => {
     // Build the URL with route parameters
     const url = `/daily-workouts/${userId}/${day}`;
 
-    // Fetch daily workouts filtered by userId and optionally by day
+    // Fetch daily workout filtered by userId and by day
     fetch(url, { signal })
       .then((response) => {
         if (response.ok) {
@@ -50,15 +51,13 @@ const DailyWorkoutList = ({ userId, day }) => {
           <h2 className="text-2xl font-semibold mb-4">
             {workout.name}: {workout.force}
           </h2>
-          <ul>
-            {workout.workout_cards && workout.workout_cards.length > 0 ? (
-              workout.workout_cards.map((workout_card) => (
-                <li key={workout_card._id}>{workout_card.exercise_name} </li>
-              ))
-            ) : (
-              <div>No workout cards available for this day.</div>
-            )}
-          </ul>
+          {workout.workout_cards && workout.workout_cards.length > 0 ? (
+            workout.workout_cards.map((workout_card, index) => (
+              <WorkoutCard key={index} />
+            ))
+          ) : (
+            <div>No workout cards available for this day.</div>
+          )}
         </div>
         {error && <div className="text-red-500 mt-4">{error}</div>}
       </div>
