@@ -134,8 +134,8 @@ app.post("/createWeeklyPlan", async (req, res) => {
       user_id: user.user_id,
     };
 
-    // Determine number of cards based on fitness level
-    const number_of_cards =
+    // Determine number of weekly workouts based on fitness level
+    const number_of_workouts =
       user.fitness_level === "Intermediate"
         ? 4
         : user.fitness_level === "Advanced"
@@ -154,7 +154,7 @@ app.post("/createWeeklyPlan", async (req, res) => {
       forceIndex = (forceIndex + 1) % forceGroups.length;
       const forceExercises = groupedExercises[selectedForce].slice(
         0,
-        number_of_cards
+        number_of_workouts
       );
 
       const dailyWorkoutCards = await Promise.all(
@@ -176,8 +176,8 @@ app.post("/createWeeklyPlan", async (req, res) => {
         })
       );
 
-      if (dailyWorkoutCards.length > number_of_cards) {
-        dailyWorkoutCards.length = number_of_cards;
+      if (dailyWorkoutCards.length > number_of_workouts) {
+        dailyWorkoutCards.length = number_of_workouts;
       }
       console.log(`Day ${i + 1} - Created workout cards:`, dailyWorkoutCards);
 
@@ -297,7 +297,6 @@ app.get("/daily-workouts/:userId/:day", async (req, res) => {
     if (!dailyWorkout) {
       return res.status(404).json({ error: "Daily workout not found" });
     }
-
     res.json(dailyWorkout);
   } catch (error) {
     console.error("Error fetching daily workout:", error);

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import WorkoutCard from "./WorkoutCard";
+import { useParams } from "react-router-dom";
 
-const DailyWorkoutList = ({ userId, day }) => {
-  const [workout, setWorkout] = useState({});
+const DailyWorkoutList = () => {
+  const { userId, day } = useParams(); // Extract userId and day from URL
+  const [workout, setWorkout] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!userId || !day) return; // Exit if userId or day is not present
+    if (!userId || !day) {
+      return;
+    }
 
     // Handle request cancellation
     const controller = new AbortController();
@@ -21,16 +24,16 @@ const DailyWorkoutList = ({ userId, day }) => {
         if (response.ok) {
           return response.json();
         }
-        throw response;
+        throw new Error("Network response was not ok");
       })
-      .then((data) => setWorkout(data))
+      .then((data) => {
+        setWorkout(data);
+      })
       .catch((error) => {
         if (error.name === "AbortError") {
-          // Handle fetch abort (optional)
           console.log("Fetch aborted");
         } else {
-          console.error("Error encountering data fetch:", error);
-          setError("Error encountering data fetch. Please try again.");
+          setError("Error fetching data. Please try again.");
         }
       });
 
@@ -41,6 +44,10 @@ const DailyWorkoutList = ({ userId, day }) => {
     return <div className="text-red-500">{error}</div>;
   }
 
+  if (!workout) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="flex flex-col justify-center px-9 py-20 mx-auto w-full text-xl bg-lime-200 border border-black border-solid max-w-[800px]">
       <div className="flex flex-col px-3 pt-9 pb-20 mt-10 w-full bg-white">
@@ -49,17 +56,20 @@ const DailyWorkoutList = ({ userId, day }) => {
         </div>
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">
-            {workout.name}: {workout.force}
+            {workout.name}
+            {workout.force && `: ${workout.force}`}
           </h2>
           {workout.workout_cards && workout.workout_cards.length > 0 ? (
             workout.workout_cards.map((workout_card, index) => (
-              <WorkoutCard key={index} />
+              <div key={index}>
+                {/* Add workout card details here */}
+                <div>{workout_card.exercise_name}</div>
+              </div>
             ))
           ) : (
             <div>No workout cards available for this day.</div>
           )}
         </div>
-        {error && <div className="text-red-500 mt-4">{error}</div>}
       </div>
     </div>
   );
