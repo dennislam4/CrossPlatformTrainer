@@ -18,6 +18,7 @@ const WeeklyFitnessPlan = () => {
     ],
     []
   );
+
   useEffect(() => {
     if (!userId) return; // Exit if userId is not present
 
@@ -31,57 +32,46 @@ const WeeklyFitnessPlan = () => {
         }
         throw response;
       })
-      .then(async (data) => {
+      .then((data) => {
         console.log("Data received from API:", data); // Log the raw data
-        const workoutDetails = await Promise.all(
-          data.workouts.map((workoutId, index) => {
-            const day = daysOfWeek[index];
-            return fetch(`/daily-workouts/${userId}/${day}`).then((res) =>
-              res.json()
-            );
-          })
-        );
-        console.log("Workout details:", workoutDetails); // Log the detailed workout information
-        setWorkouts(workoutDetails);
+        setWorkouts(data.workouts || []);
       })
       .catch((error) => {
         if (error.name === "AbortError") {
           console.log("Fetch aborted");
         } else {
-          console.error("Error encountering data fetch:", error);
-          setError("Error encountering data fetch. Please try again.");
+          console.error("Error fetching data:", error);
+          setError("Error fetching data. Please try again.");
         }
       });
 
     return () => controller.abort();
-  }, [userId, daysOfWeek]); // Add userId to the dependency array to keep fetch from happening constantly
+  }, [userId]);
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
 
   return (
-    <div className="flex flex-col justify-center px-9 py-20 mx-auto w-full text-xl bg-lime-200 border border-black border-solid max-w-[800px]">
-      <div className="flex flex-col px-3 pt-9 pb-20 mt-10 w-full bg-white">
-        <div className="self-center text-5xl italic font-black text-black mb-10">
-          Weekly Fitness Plan
-        </div>
-        <div className="mb-8">
-          {workouts && workouts.length > 0 ? (
-            workouts.map((workout, index) => (
-              <div key={index} className="mb-8">
-                <DailyWorkoutList userId={userId} day={daysOfWeek[index]} />
-              </div>
-            ))
-          ) : (
-            <div className="text-center text-xl text-gray-500">
-              No fitness plans available.
-            </div>
-          )}
-        </div>
-
-        {error && <div className="text-red-500 mt-4">{error}</div>}
+    <div className="flex flex-col px-3 pt-9 pb-20 mt-10 w-full bg-white">
+      <div className="self-center text-5xl italic font-black text-black mb-10">
+        Weekly Fitness Plan
       </div>
+      <div className="mb-8">
+        {workouts && workouts.length > 0 ? (
+          daysOfWeek.map((day, index) => (
+            <div key={index} className="mb-8">
+              <DailyWorkoutList userId={userId} day={day} />
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-xl text-gray-500">
+            No fitness plans available.
+          </div>
+        )}
+      </div>
+
+      {error && <div className="text-red-500 mt-4">{error}</div>}
     </div>
   );
 };

@@ -381,7 +381,7 @@ app.put("/updateprofile", async (req, res) => {
 });
 
 // UPDATE workout card
-app.put("/workoutcards/:_id", async (req, res) => {
+app.put("/updateworkoutcards/:_id", async (req, res) => {
   const _id = req.params._id;
   const revisedWorkoutCardData = {
     exercise_name: req.body.exercise_name,

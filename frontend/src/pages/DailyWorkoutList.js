@@ -1,25 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import WorkoutCard from "./WorkoutCard";
 
-const DailyWorkoutList = () => {
-  const { userId, day } = useParams(); // Extract userId and day from URL
-  const [workout, setWorkout] = useState(null);
+const DailyWorkoutList = ({ userId, day }) => {
+  const [workoutCards, setWorkoutCards] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!userId || !day) {
-      return;
-    }
+    if (!userId || !day) return;
 
-    // Handle request cancellation
     const controller = new AbortController();
     const { signal } = controller;
 
-    // Build the URL with route parameters
-    const url = `/daily-workouts/${userId}/${day}`;
-
-    // Fetch daily workout filtered by userId and by day
-    fetch(url, { signal })
+    fetch(`/daily-workouts/${userId}/${day}`, { signal })
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -27,7 +19,7 @@ const DailyWorkoutList = () => {
         throw new Error("Network response was not ok");
       })
       .then((data) => {
-        setWorkout(data);
+        setWorkoutCards(data.workout_cards || []);
       })
       .catch((error) => {
         if (error.name === "AbortError") {
@@ -44,7 +36,7 @@ const DailyWorkoutList = () => {
     return <div className="text-red-500">{error}</div>;
   }
 
-  if (!workout) {
+  if (!workoutCards.length) {
     return <div>Loading...</div>;
   }
 
@@ -55,20 +47,20 @@ const DailyWorkoutList = () => {
           Daily Workout List
         </div>
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
-            {workout.name}
-            {workout.force && `: ${workout.force}`}
-          </h2>
-          {workout.workout_cards && workout.workout_cards.length > 0 ? (
-            workout.workout_cards.map((workout_card, index) => (
-              <div key={index}>
-                {/* Add workout card details here */}
-                <div>{workout_card.exercise_name}</div>
-              </div>
-            ))
-          ) : (
-            <div>No workout cards available for this day.</div>
-          )}
+          <h2 className="text-2xl font-semibold mb-4">{day}</h2>
+          {workoutCards.map((workout_card) => (
+            <WorkoutCard
+              key={workout_card._id}
+              exercise_name={workout_card.exercise_name}
+              weight={workout_card.weight}
+              weight_unit={workout_card.weight_unit}
+              reps={workout_card.reps}
+              sets={workout_card.sets}
+              time={workout_card.time}
+              intensity={workout_card.intensity}
+              _id={workout_card._id}
+            />
+          ))}
         </div>
       </div>
     </div>
