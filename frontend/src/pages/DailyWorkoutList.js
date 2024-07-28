@@ -1,52 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import WorkoutCard from "./WorkoutCard";
 
-const DailyWorkoutList = () => {
-  const [workouts, setWorkouts] = useState([]);
+const DailyWorkoutList = ({ userId, day }) => {
+  const [workoutCards, setWorkoutCards] = useState([]);
   const [error, setError] = useState(null);
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const userId = queryParams.get("user_id");
-  const day = queryParams.get("day"); // Extract day from query parameters
-
   useEffect(() => {
-    if (!userId) return; // Exit if userId is not present
+    if (!userId || !day) return;
 
-    // Handle request cancellation
     const controller = new AbortController();
     const { signal } = controller;
 
-    // Build the query string with both userId and day
-    const query = new URLSearchParams();
-    if (userId) query.append("user_id", userId);
-    if (day) query.append("day", day);
-
-    // Fetch daily workouts filtered by userId and optionally by day
-    fetch(`/daily-workouts?${query.toString()}`, { signal })
+    fetch(`/daily-workouts/${userId}/${day}`, { signal })
       .then((response) => {
         if (response.ok) {
           return response.json();
         }
-        throw response;
+        throw new Error("Network response was not ok");
       })
-      .then((data) => setWorkouts(data))
+      .then((data) => {
+        setWorkoutCards(data.workout_cards || []);
+      })
       .catch((error) => {
         if (error.name === "AbortError") {
-          // Handle fetch abort (optional)
           console.log("Fetch aborted");
         } else {
-          console.error("Error encountering data fetch:", error);
-          setError("Error encountering data fetch. Please try again.");
+          setError("Error fetching data. Please try again.");
         }
       });
 
-    // Cleanup function to abort the fetch request on component unmount
     return () => controller.abort();
-  }, [userId, day]); // Add day to the dependency array
+  }, [userId, day]);
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
+  }
+
+  if (!workoutCards.length) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -55,28 +46,22 @@ const DailyWorkoutList = () => {
         <div className="self-center text-5xl italic font-black text-black mb-10">
           Daily Workout List
         </div>
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">{workout.name}</h2>
-            <ul className="list-disc pl-5">
-              {workout.workout_card_1_id && (
-                <li>Workout Card 1 ID: {workout.workout_card_1_id}</li>
-              )}
-              {workout.workout_card_2_id && (
-                <li>Workout Card 2 ID: {workout.workout_card_2_id}</li>
-              )}
-              {workout.workout_card_3_id && (
-                <li>Workout Card 3 ID: {workout.workout_card_3_id}</li>
-              )}
-              {workout.workout_card_4_id && (
-                <li>Workout Card 4 ID: {workout.workout_card_4_id}</li>
-              )}
-              {workout.workout_card_5_id && (
-                <li>Workout Card 5 ID: {workout.workout_card_5_id}</li>
-              )}
-            </ul>
-          </div>
-        ))
-        {error && <div className="text-red-500 mt-4">{error}</div>}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4">{day}</h2>
+          {workoutCards.map((workout_card) => (
+            <WorkoutCard
+              key={workout_card._id}
+              exercise_name={workout_card.exercise_name}
+              weight={workout_card.weight}
+              weight_unit={workout_card.weight_unit}
+              reps={workout_card.reps}
+              sets={workout_card.sets}
+              time={workout_card.time}
+              intensity={workout_card.intensity}
+              _id={workout_card._id}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

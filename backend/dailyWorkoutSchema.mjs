@@ -1,14 +1,10 @@
 import mongoose from "mongoose";
 
-const dailyWorkoutSchema = mongoose.Schema({
+const dailyWorkoutSchema = new mongoose.Schema({
   name: { type: String },
   force: { type: String },
-  user_id: { type: String },
-  workout_card_1_id: { type: String },
-  workout_card_2_id: { type: String },
-  workout_card_3_id: { type: String },
-  workout_card_4_id: { type: String },
-  workout_card_5_id: { type: String },
+  user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  workout_cards: [{ type: mongoose.Schema.Types.ObjectId, ref: "WorkoutCard" }],
 });
 
 const DailyWorkout = mongoose.model("DailyWorkout", dailyWorkoutSchema);

@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const workoutCardSchema = mongoose.Schema({
-  id: { type: String },
   user_id: { type: String, required: true },
   exercise_name: { type: String, required: true },
   reps: { type: Number },

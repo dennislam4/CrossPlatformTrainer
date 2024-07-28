@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 // Initialize the UserProfile component
 const UserProfile = () => {
@@ -12,7 +12,8 @@ const UserProfile = () => {
     { id: 6, src: "/images/woman_3.png", alt: "Avatar 6" },
   ];
 
-  // Use the useLocation hook to access the user object passed from the SignIn component
+  // useLocation and useParams to access the user object
+  const { userId } = useParams();
   const location = useLocation();
   const signedInUser = location.state?.user;
   const [error, setError] = useState("");
@@ -37,17 +38,33 @@ const UserProfile = () => {
     weight_unit: "lbs",
   });
 
+  useEffect(() => {
+    const fetchUserData = async (userId) => {
+      try {
+        const response = await fetch(`/userprofile/${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          const errorMsg = await response.json();
+          setError(errorMsg.error || "An error occurred. Please try again.");
+        }
+      } catch (error) {
+        setError("An error occurred. Please try again.");
+      }
+    };
+
+    if (userId) {
+      fetchUserData(userId);
+    } else if (signedInUser) {
+      setUser(signedInUser);
+    }
+  }, [userId, signedInUser]);
+
   // Handle the avatar image change
   const handleAvatarChange = (selectedAvatar) => {
     setUser({ ...user, avatar: selectedAvatar });
   };
-
-  // Set the user state to the signed-in user object if available
-  useEffect(() => {
-    if (signedInUser) {
-      setUser(signedInUser);
-    }
-  }, [signedInUser]);
 
   // Handle the form input changes
   const handleChange = (e) => {

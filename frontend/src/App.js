@@ -8,9 +8,9 @@ import SignUp from "./pages/SignUp.js";
 import UserProfile from "./pages/UserProfile.js";
 import Nav from "./pages/Nav.js";
 import FitnessSurvey from "./pages/FitnessSurvey";
-import WorkoutCard from "./pages/WorkoutCard.js";
 import DailyWorkoutList from "./pages/DailyWorkoutList.js";
-import Dashboard from './pages/Dashboard.js'
+import WeeklyFitnessPlan from "./pages/WeeklyFitnessPlan.js";
+import Dashboard from "./pages/Dashboard.js";
 
 function App() {
   return (
@@ -20,10 +20,13 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/Nav" element={<Nav />} />
-        <Route path="/userprofile" element={<UserProfile />} />
+        <Route path="/userprofile/:userId" element={<UserProfile />} />
         <Route path="/fitnesssurvey" element={<FitnessSurvey />} />
-        <Route path="/WorkoutCard" element={<WorkoutCard />} />
-        <Route path="/daily-workouts" element={<DailyWorkoutList />} />
+        <Route
+          path="/daily-workouts/:userId/:day"
+          element={<DailyWorkoutList />}
+        />
+        <Route path="/fitnessplan/:userId" element={<WeeklyFitnessPlan />} />
         <Route path="/Dashboard" element={<Dashboard />} />
       </Routes>
     </Router>

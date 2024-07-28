@@ -27,7 +27,7 @@ function SignIn() {
       });
       if (response.ok) {
         const user = await response.json();
-        navigate("/userprofile", { state: { user } });
+        navigate("/userprofile/" + user._id);
       } else {
         const errorMsg = await response.json();
         setError(errorMsg.message || "An error occurred. Please try again.");
