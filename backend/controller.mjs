@@ -112,20 +112,31 @@ app.post("/createWeeklyPlan", async (req, res) => {
       fitness_level: user.fitness_level,
     };
 
-    if (user.fitness_goal === "Lose Weight") {
-      filter.category = { $in: ["plyometrics", "cardio", "strength"] };
-    } else if (user.fitness_goal === "Build Strength") {
-      filter.category = { $in: ["strength", "powerlifting", "strongman"] };
-    } else if (user.fitness_goal === "Build Endurance") {
-      filter.category = {
-        $in: ["cardio", "strongman", "strength", "plyometrics"],
-      };
-    } else if (user.fitness_goal === "Build Muscle") {
-      filter.category = {
-        $in: ["strength", "powerlifting", "strongman", "olympic weightlifting"],
-      };
-    } else if (user.fitness_goal === "Increase Flexibility") {
-      filter.category = "stretching";
+    switch (user.fitness_goal) {
+      case "Lose Weight":
+        filter.category = { $in: ["plyometrics", "cardio", "strength"] };
+        break;
+      case "Build Strength":
+        filter.category = { $in: ["strength", "powerlifting", "strongman"] };
+        break;
+      case "Build Endurance":
+        filter.category = {
+          $in: ["cardio", "strongman", "strength", "plyometrics"],
+        };
+        break;
+      case "Build Muscle":
+        filter.category = {
+          $in: [
+            "strength",
+            "powerlifting",
+            "strongman",
+            "olympic weightlifting",
+          ],
+        };
+        break;
+      case "Increase Flexibility":
+        filter.category = "stretching";
+        break;
     }
 
     const exercises = await Exercise.find(filter);
@@ -148,14 +159,12 @@ app.post("/createWeeklyPlan", async (req, res) => {
     let forceIndex = 0;
 
     // Create daily workouts and workout cards
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 0; i < number_of_workouts; i++) {
       const selectedForce = forceGroups[forceIndex];
-      // Increment index, and loop back to the beginning if it exceeds the number of force groups
+
+      // This selects 5 exercises from each kind of force to create a daily workout.
       forceIndex = (forceIndex + 1) % forceGroups.length;
-      const forceExercises = groupedExercises[selectedForce].slice(
-        0,
-        number_of_workouts
-      );
+      const forceExercises = groupedExercises[selectedForce].slice(0, 5);
 
       const dailyWorkoutCards = await Promise.all(
         forceExercises.map((exercise) => {
@@ -171,31 +180,23 @@ app.post("/createWeeklyPlan", async (req, res) => {
             is_completed: false,
             user_id: user.user_id,
           });
-          console.log(`Day ${i + 1} - Created workout card:`, workoutCard);
           return workoutCard.save();
         })
       );
 
-      if (dailyWorkoutCards.length > number_of_workouts) {
-        dailyWorkoutCards.length = number_of_workouts;
-      }
-      console.log(`Day ${i + 1} - Created workout cards:`, dailyWorkoutCards);
-
       // Create a daily workout with an array of workout card IDs
       const dailyWorkout = new DailyWorkout({
-        name: getDayName(i),
+        name: getDayName(i + 1),
         force: selectedForce,
         user_id: user.user_id,
         workout_cards: dailyWorkoutCards.map((card) => card._id),
       });
-      console.log(`Daily workout:`, dailyWorkout);
       const savedDailyWorkout = await dailyWorkout.save();
 
       // Add created daily workout to the weekly plan
       weeklyPlan.workouts.push(savedDailyWorkout._id.toString());
     }
 
-    // Save the weekly plan
     const newWeeklyPlan = new WeeklyFitnessPlan(weeklyPlan);
     await newWeeklyPlan.save();
     res.status(201).json(newWeeklyPlan);
@@ -247,12 +248,12 @@ app.get("/userprofile/:userId", async (req, res) => {
   }
 });
 
-// GET workout card by User ID
-app.get("/workoutcards/:userId", async (req, res) => {
+// GET workout card by Workout Card ID
+app.get("/workoutcards/:_id", async (req, res) => {
   try {
     const workoutcard = await fitnessDb.getModelById(
       WorkoutCard,
-      req.params.userId
+      req.params._id
     );
     if (!workoutcard) {
       console.log("Workout card not found");
@@ -339,6 +340,7 @@ app.delete("/workoutcards/:_id", (req, res) => {
         .send({ error: "Request to delete this workout card failed" });
     });
 });
+
 // UPDATE controller ************************************
 app.put("/updateprofile", async (req, res) => {
   const _id = req.body._id;
@@ -412,6 +414,61 @@ app.put("/workoutcards/:_id", async (req, res) => {
     res
       .status(400)
       .json({ error: "Request to update this workout card failed" });
+  }
+});
+
+// UPDATE daily workout list
+app.put("/daily-workouts/:userId/:day", async (req, res) => {
+  try {
+    const { userId, day } = req.params;
+    const { workoutCards } = req.body;
+
+    // Validate input
+    if (!workoutCards || !Array.isArray(workoutCards)) {
+      return res.status(400).json({ error: "Invalid workout cards data" });
+    }
+
+    // Fetch the daily workout
+    const dailyWorkout = await DailyWorkout.findOne({
+      user_id: userId,
+      name: day,
+    });
+
+    if (!dailyWorkout) {
+      return res.status(404).json({ error: "Daily workout not found" });
+    }
+
+    // Update workout cards
+    const updatedWorkoutCards = await Promise.all(
+      workoutCards.map(async (card) => {
+        // Update existing workout card if there is one
+        if (card._id) {
+          const updatedCard = await WorkoutCard.findByIdAndUpdate(
+            card._id,
+            { $set: card },
+            { new: true }
+          );
+          return updatedCard;
+        } else {
+          // Create new workout card
+          const newCard = new WorkoutCard({
+            ...card,
+            user_id: userId,
+          });
+          return newCard.save();
+        }
+      })
+    );
+
+    // Update the daily workout with the new workout card IDs
+    dailyWorkout.workout_cards = updatedWorkoutCards.map((card) => card._id);
+
+    const updatedDailyWorkout = await dailyWorkout.save();
+
+    res.json(updatedDailyWorkout);
+  } catch (error) {
+    console.error("Error updating daily workout:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
