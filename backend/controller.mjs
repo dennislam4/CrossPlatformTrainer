@@ -128,12 +128,6 @@ app.post("/createWeeklyPlan", async (req, res) => {
     return res.status(400).json({ error: "User object is required." });
   }
 
-  if (!user.fitness_goal || !user.fitness_level || !user.user_id) {
-    return res.status(400).json({
-      error: "User fitness_goal, fitness_level, and user_id are required.",
-    });
-  }
-
   try {
     // Convert user_id to ObjectId
     user.user_id = mongoose.Types.ObjectId(user.user_id);

@@ -62,6 +62,13 @@ const FitnessSurvey = () => {
   const handleSubmit = async (updatedUser) => {
     try {
       const { _id: userId, fitness_level, fitness_goal } = updatedUser;
+      // Validate input
+      if (!userId || !fitness_level || !fitness_goal) {
+        console.error(
+          "User fitness_goal, fitness_level, and user_id are required."
+        );
+        return;
+      }
 
       // Create the weekly fitness plan using the user ID, fitness level, and fitness goal
       const fitnessPlanResponse = await fetch("/createWeeklyPlan", {
@@ -71,7 +78,7 @@ const FitnessSurvey = () => {
         },
         body: JSON.stringify({
           user: {
-            _id: userId,
+            user_id: userId,
             fitness_level,
             fitness_goal,
           },
