@@ -6,7 +6,7 @@ import Home from "./pages/Home.js";
 import SignIn from "./pages/SignIn.js";
 import SignUp from "./pages/SignUp.js";
 import UserProfile from "./pages/UserProfile.js";
-import Nav from "./pages/Nav.js";
+import Progression from "./pages/Progression.js";
 import FitnessSurvey from "./pages/FitnessSurvey";
 import DailyWorkoutList from "./pages/DailyWorkoutList.js";
 import WeeklyFitnessPlan from "./pages/WeeklyFitnessPlan.js";
@@ -19,7 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/Nav" element={<Nav />} />
+        <Route path="/Progression" element={<Progression />} />
         <Route path="/userprofile/:userId" element={<UserProfile />} />
         <Route path="/fitnesssurvey" element={<FitnessSurvey />} />
         <Route
