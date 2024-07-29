@@ -12,14 +12,13 @@ const UserProfile = () => {
     { id: 6, src: "/images/woman_3.png", alt: "Avatar 6" },
   ];
 
-  // useLocation and useParams to access the user object
   const { userId } = useParams();
   const location = useLocation();
   const signedInUser = location.state?.user;
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Blank and preset values for default user profile
   const [user, setUser] = useState({
     avatar: avatars[0].src,
     name: "",
@@ -61,12 +60,10 @@ const UserProfile = () => {
     }
   }, [userId, signedInUser]);
 
-  // Handle the avatar image change
   const handleAvatarChange = (selectedAvatar) => {
     setUser({ ...user, avatar: selectedAvatar });
   };
 
-  // Handle the form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({
@@ -75,7 +72,6 @@ const UserProfile = () => {
     });
   };
 
-  // Handle the form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -100,23 +96,20 @@ const UserProfile = () => {
     }
   };
 
-  // Handle the unit change for height
   const handleHeightUnitChange = (e) => {
     setUser({
       ...user,
-      heightUnit: e.target.value,
+      height_unit: e.target.value, // Updated property name
     });
   };
 
-  // Handle the unit change for weight
   const handleWeightUnitChange = (e) => {
     setUser({
       ...user,
-      weightUnit: e.target.value,
+      weight_unit: e.target.value, // Updated property name
     });
   };
 
-  // Return the UserProfile component with form inputs
   return (
     <div className="max-w-md mx-auto p-6 border border-gray-300 rounded-lg bg-white">
       <h2 className="text-2xl font-bold text-center mb-6">Edit Profile</h2>
@@ -159,7 +152,7 @@ const UserProfile = () => {
           </label>
           <input
             type="email"
-            name="email"
+            name="email_address"
             value={user.email_address}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-lg"
@@ -341,5 +334,5 @@ const UserProfile = () => {
     </div>
   );
 };
-// export the UserProfile component
+
 export default UserProfile;
