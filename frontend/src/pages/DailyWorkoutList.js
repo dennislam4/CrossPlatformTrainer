@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import WorkoutCard from "./WorkoutCard";
+import RestDay from "./RestDay";
 
 const DailyWorkoutList = ({ userId, day }) => {
   const [workoutCards, setWorkoutCards] = useState([]);
@@ -37,7 +38,7 @@ const DailyWorkoutList = ({ userId, day }) => {
   }
 
   if (!workoutCards.length) {
-    return <div>Loading...</div>;
+    return <RestDay day={day} />;
   }
 
   return (
