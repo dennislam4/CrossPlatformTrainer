@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 // Initialize the UserProfile component
 const UserProfile = () => {
@@ -14,7 +14,9 @@ const UserProfile = () => {
 
   let { userId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const signedInUser = location.state?.user;
+
   if (signedInUser) {
     userId = signedInUser._id;
   }
@@ -90,6 +92,9 @@ const UserProfile = () => {
         setError("");
         const updatedUser = await response.json();
         setUser(updatedUser);
+        navigate(`/Dashboard/${updatedUser._id}`, {
+          state: { userId: updatedUser._id },
+        });
       } else {
         const errorMsg = await response.json();
         setError(errorMsg.error || "An error occurred. Please try again.");
