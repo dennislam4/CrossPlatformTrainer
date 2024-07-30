@@ -27,7 +27,7 @@ function SignIn() {
       });
       if (response.ok) {
         const user = await response.json();
-        navigate("/Dashboard", { state: { userId: user._id } });
+        navigate(`/Dashboard/${user._id}`, { state: { userId: user._id } });
       } else {
         const errorMsg = await response.json();
         setError(errorMsg.message || "An error occurred. Please try again.");
@@ -78,3 +78,4 @@ function SignIn() {
 }
 
 export default SignIn;
+
