@@ -3,6 +3,7 @@ import WorkoutCard from "./WorkoutCard";
 import RestDay from "./RestDay";
 
 const DailyWorkoutList = ({ userId, day }) => {
+  const [dailyWorkout, setDailyWorkout] = useState([]);
   const [workoutCards, setWorkoutCards] = useState([]);
   const [error, setError] = useState(null);
 
@@ -20,6 +21,7 @@ const DailyWorkoutList = ({ userId, day }) => {
         throw new Error("Network response was not ok");
       })
       .then((data) => {
+        setDailyWorkout(data);
         setWorkoutCards(data.workout_cards || []);
       })
       .catch((error) => {
@@ -48,7 +50,9 @@ const DailyWorkoutList = ({ userId, day }) => {
           Daily Workout List
         </div>
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">{day}</h2>
+          <h2 className="text-2xl font-semibold mb-4">
+            {dailyWorkout.name}: {dailyWorkout.force}
+          </h2>
           {workoutCards.map((workout_card) => (
             <WorkoutCard
               key={workout_card._id}
