@@ -32,12 +32,12 @@ const UserProfile = () => {
     fitness_level: "",
     fitness_goal: "",
     body_type: "",
-    height_unit: "imperial",
+    height_unit: "",
     height_feet: "",
     height_inches: "",
     height_meters: "",
     height_centimeters: "",
-    weight_unit: "lbs",
+    weight_unit: "",
   });
 
   useEffect(() => {
