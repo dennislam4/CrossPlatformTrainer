@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import WeeklyFitnessPlan from "./WeeklyFitnessPlan";
 import "./FitnessSurvey.css";
 
@@ -9,6 +9,10 @@ const FitnessSurvey = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const newUser = location.state?.user;
+  let { userId } = useParams();
+  if (newUser) {
+    userId = newUser._id;
+  }
 
   const [error, setError] = useState("");
   const [step, setStep] = useState(0);
@@ -27,7 +31,7 @@ const FitnessSurvey = () => {
     calculate_as_gender: "",
     email_address: newUser?.email_address || "",
     password: newUser?.password || "",
-    _id: newUser?._id || "",
+    _id: newUser?._id || userId || "",
   });
 
   // Survey Navigation
@@ -63,10 +67,12 @@ const FitnessSurvey = () => {
     try {
       const { _id: userId, fitness_level, fitness_goal } = updatedUser;
       // Validate input
-      if (!userId || !fitness_level || !fitness_goal) {
-        console.error(
-          "User fitness_goal, fitness_level, and user_id are required."
-        );
+      if (!userId) {
+        console.error("User ID is required.");
+      } else if (!fitness_level) {
+        console.error("fitness_level is required");
+      } else if (!fitness_goal) {
+        console.error("fitness_goal is required");
         return;
       }
 

@@ -12,9 +12,12 @@ const UserProfile = () => {
     { id: 6, src: "/images/woman_3.png", alt: "Avatar 6" },
   ];
 
-  const { userId } = useParams();
+  let { userId } = useParams();
   const location = useLocation();
   const signedInUser = location.state?.user;
+  if (signedInUser) {
+    userId = signedInUser._id;
+  }
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");

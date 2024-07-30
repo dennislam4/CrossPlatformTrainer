@@ -41,6 +41,7 @@ app.post("/signin", async (req, res) => {
 // SIGN UP (Create user)
 app.post("/signup", async (req, res) => {
   const { name, email_address, password } = req.body;
+  console.log("signup", req.body);
   try {
     // Check if a user with the same email already exists
     const existingUser = await User.findOne({ email_address });
