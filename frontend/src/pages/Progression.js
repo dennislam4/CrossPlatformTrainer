@@ -1,7 +1,9 @@
 import * as React from "react";
-import { Link } from 'react-router-dom';
+import { Link, useParams } from "react-router-dom";
 
 function Progression() {
+  const { userId } = useParams();
+
   return (
     <div className="flex flex-col pt-20 mx-auto w-full bg-lime-200 border border-black border-solid bg-blend-normal max-w-[480px]">
       <div className="flex flex-col self-center px-5 pt-12 pb-20 mt-20 w-full bg-white max-w-[361px] rounded-[30px]">
@@ -40,30 +42,32 @@ function Progression() {
         </div>
       </div>
       <div className="flex gap-5 justify-between px-10 py-7 mt-44 w-full text-xs font-medium text-black bg-white shadow-[0px_0px_0px_rgba(0,0,0,0.1)]">
-      <Link to="/fitnessplan">
-        <button className="flex flex-col self-start mt-2.5 tracking-tight text-center">
-          <img
-            loading="lazy"
-            src="/images/progress.jpg"
-            className="self-center w-14 aspect-[1.82]"
-          />
-          <div className="mt-1.5">Fitness Plan</div>
-        </button>
+        <Link to={`/fitnessplan/${userId}`}>
+          <button className="flex flex-col self-start mt-2.5 tracking-tight text-center">
+            <img
+              alt="loading..."
+              loading="lazy"
+              src="/images/progress.jpg"
+              className="self-center w-14 aspect-[1.82]"
+            />
+            <div className="mt-1.5">Fitness Plan</div>
+          </button>
         </Link>
-        <Link to="/UserProfile">
-        <button className="flex flex-col tracking-tight text-center whitespace-nowrap">
-          <img
-            loading="lazy"
-            src="/images/avatar.jpg"
-            className="self-center aspect-[0.86] rounded-[1000px] w-[38px]"
-          />
-          <div>Settings</div>
-        </button>
+        <Link to={`/userprofile/${userId}`}>
+          <button className="flex flex-col tracking-tight text-center whitespace-nowrap">
+            <img
+              alt="loading..."
+              loading="lazy"
+              src="/images/avatar.jpg"
+              className="self-center aspect-[0.86] rounded-[1000px] w-[38px]"
+            />
+            <div>Settings</div>
+          </button>
         </Link>
-        <Link to="/Dashboard">
-        <button className="p-2.5 my-auto text-xl font-black text-white bg-black rounded-xl border border-black border-solid">
-          Back to Dashboard
-        </button>
+        <Link to={`/Dashboard/${userId}`}>
+          <button className="p-2.5 my-auto text-xl font-black text-white bg-black rounded-xl border border-black border-solid">
+            Back to Dashboard
+          </button>
         </Link>
       </div>
     </div>
@@ -71,4 +75,3 @@ function Progression() {
 }
 
 export default Progression;
-

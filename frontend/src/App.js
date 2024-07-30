@@ -19,7 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/Progression" element={<Progression />} />
+        <Route path="/Progression/:userId" element={<Progression />} />
         <Route path="/userprofile/:userId" element={<UserProfile />} />
         <Route path="/fitnesssurvey" element={<FitnessSurvey />} />
         <Route
@@ -27,7 +27,7 @@ function App() {
           element={<DailyWorkoutList />}
         />
         <Route path="/fitnessplan/:userId" element={<WeeklyFitnessPlan />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/Dashboard/:userId" element={<Dashboard />} />
       </Routes>
     </Router>
   );
