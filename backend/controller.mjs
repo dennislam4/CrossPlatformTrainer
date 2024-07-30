@@ -41,6 +41,7 @@ app.post("/signin", async (req, res) => {
 // SIGN UP (Create user)
 app.post("/signup", async (req, res) => {
   const { name, email_address, password } = req.body;
+  console.log("signup", req.body);
   try {
     // Check if a user with the same email already exists
     const existingUser = await User.findOne({ email_address });
@@ -87,6 +88,38 @@ const getDayName = (number) => {
   return dayNames[number];
 };
 
+// helper method for exercise filter
+const getExerciseFilter = (user) => {
+  const filter = {
+    fitness_goal: user.fitness_goal,
+    fitness_level: user.fitness_level,
+  };
+
+  switch (user.fitness_goal) {
+    case "Lose Weight":
+    default:
+      filter.category = { $in: ["plyometrics", "cardio", "strength"] };
+      break;
+    case "Build Strength":
+      filter.category = { $in: ["strength", "powerlifting", "strongman"] };
+      break;
+    case "Build Endurance":
+      filter.category = {
+        $in: ["cardio", "strongman", "strength", "plyometrics"],
+      };
+      break;
+    case "Build Muscle":
+      filter.category = {
+        $in: ["strength", "powerlifting", "strongman", "olympic weightlifting"],
+      };
+      break;
+    case "Increase Flexibility":
+      filter.category = "stretching";
+      break;
+  }
+  return filter;
+};
+
 // CREATE weekly workout list. This also creates the daily workout lists and the workout cards.
 app.post("/createWeeklyPlan", async (req, res) => {
   const { user } = req.body;
@@ -96,48 +129,25 @@ app.post("/createWeeklyPlan", async (req, res) => {
     return res.status(400).json({ error: "User object is required." });
   }
 
-  if (!user.fitness_goal || !user.fitness_level || !user.user_id) {
-    return res.status(400).json({
-      error: "User fitness_goal, fitness_level, and user_id are required.",
-    });
-  }
-
   try {
     // Convert user_id to ObjectId
     user.user_id = mongoose.Types.ObjectId(user.user_id);
 
-    // Determine filter based on user's fitness goal
-    const filter = {
-      fitness_goal: user.fitness_goal,
-      fitness_level: user.fitness_level,
-    };
+    // Check if a WeeklyFitnessPlan already exists for the user
+    const existingPlan = await WeeklyFitnessPlan.findOne({
+      user_id: user.user_id,
+    });
 
-    switch (user.fitness_goal) {
-      case "Lose Weight":
-        filter.category = { $in: ["plyometrics", "cardio", "strength"] };
-        break;
-      case "Build Strength":
-        filter.category = { $in: ["strength", "powerlifting", "strongman"] };
-        break;
-      case "Build Endurance":
-        filter.category = {
-          $in: ["cardio", "strongman", "strength", "plyometrics"],
-        };
-        break;
-      case "Build Muscle":
-        filter.category = {
-          $in: [
-            "strength",
-            "powerlifting",
-            "strongman",
-            "olympic weightlifting",
-          ],
-        };
-        break;
-      case "Increase Flexibility":
-        filter.category = "stretching";
-        break;
+    // If an existing plan is found, delete it
+    if (existingPlan) {
+      await WeeklyFitnessPlan.deleteOne({ _id: existingPlan._id });
+
+      // Delete any existing daily workouts and workout cards for the user
+      await DailyWorkout.deleteMany({ user_id: user.user_id });
+      await WorkoutCard.deleteMany({ user_id: user.user_id });
     }
+
+    const filter = getExerciseFilter(user);
 
     const exercises = await Exercise.find(filter);
     const weeklyPlan = {
@@ -159,42 +169,62 @@ app.post("/createWeeklyPlan", async (req, res) => {
     let forceIndex = 0;
 
     // Create daily workouts and workout cards
-    for (let i = 0; i < number_of_workouts; i++) {
-      const selectedForce = forceGroups[forceIndex];
+    let workoutCount = 0;
+    for (let i = 0; i < 7; i++) {
+      if (
+        workoutCount < number_of_workouts &&
+        (i % 2 === 0 ||
+          workoutCount < number_of_workouts - (7 - number_of_workouts))
+      ) {
+        const selectedForce = forceGroups[forceIndex];
 
-      // This selects 5 exercises from each kind of force to create a daily workout.
-      forceIndex = (forceIndex + 1) % forceGroups.length;
-      const forceExercises = groupedExercises[selectedForce].slice(0, 5);
+        // This selects 5 exercises from each kind of force to create a daily workout.
+        forceIndex = (forceIndex + 1) % forceGroups.length;
+        const forceExercises = groupedExercises[selectedForce].slice(0, 5);
 
-      const dailyWorkoutCards = await Promise.all(
-        forceExercises.map((exercise) => {
-          const workoutCard = new WorkoutCard({
-            exercise_name: exercise.name,
-            reps: 10,
-            sets: 3,
-            weight: 0,
-            weight_unit: "lbs",
-            intensity: "medium",
-            time: 0,
-            time_unit: "seconds",
-            is_completed: false,
-            user_id: user.user_id,
-          });
-          return workoutCard.save();
-        })
-      );
+        const dailyWorkoutCards = await Promise.all(
+          forceExercises.map((exercise) => {
+            const workoutCard = new WorkoutCard({
+              exercise_name: exercise.name,
+              reps: 10,
+              sets: 3,
+              weight: 0,
+              weight_unit: "lbs",
+              intensity: "medium",
+              time: 0,
+              time_unit: "seconds",
+              is_completed: false,
+              user_id: user.user_id,
+            });
+            return workoutCard.save();
+          })
+        );
 
-      // Create a daily workout with an array of workout card IDs
-      const dailyWorkout = new DailyWorkout({
-        name: getDayName(i + 1),
-        force: selectedForce,
-        user_id: user.user_id,
-        workout_cards: dailyWorkoutCards.map((card) => card._id),
-      });
-      const savedDailyWorkout = await dailyWorkout.save();
+        // Create a daily workout with an array of workout card IDs
+        const dailyWorkout = new DailyWorkout({
+          name: getDayName(i + 1),
+          force: selectedForce,
+          user_id: user.user_id,
+          workout_cards: dailyWorkoutCards.map((card) => card._id),
+        });
+        const savedDailyWorkout = await dailyWorkout.save();
 
-      // Add created daily workout to the weekly plan
-      weeklyPlan.workouts.push(savedDailyWorkout._id.toString());
+        // Add created daily workout to the weekly plan
+        weeklyPlan.workouts.push(savedDailyWorkout._id.toString());
+        workoutCount++;
+      } else {
+        // Create a rest day with no workout cards
+        const dailyWorkout = new DailyWorkout({
+          name: getDayName(i + 1),
+          force: "rest",
+          user_id: user.user_id,
+          workout_cards: [],
+        });
+        const savedDailyWorkout = await dailyWorkout.save();
+
+        // Add created rest day to the weekly plan
+        weeklyPlan.workouts.push(savedDailyWorkout._id.toString());
+      }
     }
 
     const newWeeklyPlan = new WeeklyFitnessPlan(weeklyPlan);
@@ -256,10 +286,10 @@ app.get("/workoutcards/:_id", async (req, res) => {
       req.params._id
     );
     if (!workoutcard) {
-      console.log("Workout card not found");
+      // console.log("Workout card not found");
       return res.status(404).json({ error: "Workout card not found" });
     }
-    console.log("Workout card found:", workoutcard);
+    // console.log("Workout card found:", workoutcard);
     res.json(workoutcard);
   } catch (error) {
     console.error("Error fetching workout card:", error);

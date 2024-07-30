@@ -33,7 +33,7 @@ const WeeklyFitnessPlan = () => {
         throw response;
       })
       .then((data) => {
-        console.log("Data received from API:", data); // Log the raw data
+        // console.log("Data received from API:", data); // Log the raw data
         setWorkouts(data.workouts || []);
       })
       .catch((error) => {
