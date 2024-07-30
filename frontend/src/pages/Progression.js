@@ -1,8 +1,31 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
 function Progression() {
   const { userId } = useParams();
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`/userprofile/${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          const errorMsg = await response.json();
+          setError(errorMsg.error || "An error occurred. Please try again.");
+        }
+      } catch (error) {
+        setError("An error occurred. Please try again.");
+      }
+    };
+
+    if (userId) {
+      fetchUserData();
+    }
+  }, [userId]);
 
   return (
     <div className="flex flex-col pt-20 mx-auto w-full bg-lime-200 border border-black border-solid bg-blend-normal max-w-[480px]">
@@ -22,7 +45,9 @@ function Progression() {
           <div className="self-start text-base font-medium text-black">
             Weight
           </div>
-          <div className="flex-auto pl-36 text-xl text-zinc-600">pounds</div>
+          <div className="flex-auto pl-36 text-xl text-zinc-600">
+            {user ? user.weight : "loading..."} pounds
+          </div>
         </div>
         <div className="flex gap-5 py-4 whitespace-nowrap border-t border-neutral-200">
           <div className="my-auto text-base font-medium text-black">BMI</div>
@@ -70,8 +95,10 @@ function Progression() {
           </button>
         </Link>
       </div>
+      {error && <div className="text-red-500">{error}</div>}
     </div>
   );
 }
 
 export default Progression;
+
