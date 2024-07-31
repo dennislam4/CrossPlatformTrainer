@@ -95,8 +95,8 @@ const FitnessSurvey = () => {
         const fitnessPlanData = await fitnessPlanResponse.json();
         console.log("Weekly Fitness Plan created:", fitnessPlanData);
 
-        // Navigate to the user profile page
-        navigate(`/userprofile/${userId}`, {
+        // Navigate to the Dashboard
+        navigate(`/Dashboard/${userId}`, {
           state: { user: updatedUser },
         });
       } else {
