@@ -12,6 +12,7 @@ import DailyWorkoutList from "./pages/DailyWorkoutList.js";
 import WeeklyFitnessPlan from "./pages/WeeklyFitnessPlan.js";
 import Dashboard from "./pages/Dashboard.js";
 import Sidebar from "./components/Sidebar";
+import WorkoutCard from "./pages/WorkoutCard.js";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         />
         <Route path="/fitnessplan/:userId" element={<WeeklyFitnessPlan />} />
         <Route path="/Dashboard/:userId" element={<Dashboard />} />
+        <Route path="/workoutcard/:workoutCardId" element={<WorkoutCard />} />
       </Routes>
     </div>
       <Sidebar />
