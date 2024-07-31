@@ -9,6 +9,9 @@ function Dashboard() {
     userId = signedInUser;
   }
 
+  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const day = daysOfWeek[new Date().getDay()];
+
   return (
     <div className="flex flex-col justify-center px-9 py-20 mx-auto w-full text-2xl font-black text-white bg-lime-200 border border-black border-solid max-w-[480px]">
       <div className="flex flex-col px-10 py-10 mt-6 bg-white">
@@ -20,12 +23,12 @@ function Dashboard() {
         </div>
         <Link to={`/fitnessplan/${userId}`}>
           <button className="w-full p-2.5 mt-14 italic bg-black text-white border border-black border-solid shadow-sm">
-            Fitness Plan
+            Weekly Fitness Plan
           </button>
         </Link>
-        <Link to="/WorkoutCard">
+        <Link to={`/daily-workouts/${userId}/${day}`}>
           <button className="w-full p-2.5 mt-3 italic bg-black text-white border border-black border-solid shadow-sm">
-            Workout Card
+            Daily Workouts
           </button>
         </Link>
         <Link to={`/Progression/${userId}`}>
