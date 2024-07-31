@@ -16,6 +16,9 @@ const Sidebar = () => {
             <Link to="/Progression" className="block px-4 py-2 italic font-bold text-black bg-white border border-black border-solid rounded hover:bg-violet-300">
                 Progression
             </Link>
+            <Link to ="/workoutcard/:workoutCardId" className="block px-4 py-2 italic font-bold text-black bg-white border border-black border-solid rounded hover:bg-violet-300">
+                Workout Cards
+            </Link>
             <Link to="/userprofile/:userId" className="block px-4 py-2 italic font-bold text-black bg-white border border-black border-solid rounded hover:bg-violet-300">
                 User Profile
             </Link>
