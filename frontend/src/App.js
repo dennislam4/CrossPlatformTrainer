@@ -11,10 +11,13 @@ import FitnessSurvey from "./pages/FitnessSurvey";
 import DailyWorkoutList from "./pages/DailyWorkoutList.js";
 import WeeklyFitnessPlan from "./pages/WeeklyFitnessPlan.js";
 import Dashboard from "./pages/Dashboard.js";
+import Sidebar from "./components/Sidebar";
 
 function App() {
   return (
     <Router>
+    <div className="flex flex-col min-h-screen">
+        <div className="flex-grow p-3 mb-16">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
@@ -29,6 +32,9 @@ function App() {
         <Route path="/fitnessplan/:userId" element={<WeeklyFitnessPlan />} />
         <Route path="/Dashboard/:userId" element={<Dashboard />} />
       </Routes>
+    </div>
+      <Sidebar />
+      </div>
     </Router>
   );
 }
