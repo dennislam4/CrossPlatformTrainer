@@ -75,20 +75,30 @@ const FitnessSurvey = () => {
         console.error("fitness_goal is required");
         return;
       }
+      // Create the user profile using the updated user object
+      const userProfileResponse = await fetch("/updateprofile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: updatedUser,
+          email: updatedUser.email_address,
+        }), // Use the entire user object. Account for different field names
+      });
+      if (userProfileResponse.ok) {
+        const userProfileData = await userProfileResponse.json();
+        console.log("User Profile created:", userProfileData);
+      } else {
+        const errorMsg = await userProfileResponse.json();
+        console.log("Error creating user profile:", errorMsg.error);
+      }
 
-      // Create the weekly fitness plan using the user ID, fitness level, and fitness goal
+      // Create the weekly fitness plan using the entire user object
       const fitnessPlanResponse = await fetch("/createWeeklyPlan", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          user: {
-            user_id: userId,
-            fitness_level,
-            fitness_goal,
-          },
-        }), // Use the user object with required properties
+        body: JSON.stringify({ user: updatedUser }), // Use the entire user object
       });
 
       if (fitnessPlanResponse.ok) {
@@ -338,7 +348,7 @@ const FitnessSurvey = () => {
                 </div>
               </>
             )}
-            <div className="flex space-x-4">
+            <div>
               <button className="survey-nav-button" onClick={previousStep}>
                 Back
               </button>
@@ -348,11 +358,21 @@ const FitnessSurvey = () => {
             </div>
           </div>
         );
-      // Weight Survey Question
+      // Weight Survey Questions
       case 4:
         return (
           <div className="flex flex-col items-center">
-            <h2 className="text-3xl italic">What is your Weight?</h2>
+            <h2 className="text-3xl italic">What is your weight?</h2>
+            <h2 className="text-3xl italic">Weight Unit:</h2>
+            <select
+              name="weight_unit"
+              value={user.weight_unit}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            >
+              <option value="lbs">Pounds (lbs)</option>
+              <option value="kgs">Kilograms (kgs)</option>
+            </select>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Weight:
@@ -365,17 +385,7 @@ const FitnessSurvey = () => {
                 className="w-full p-2 border border-gray-300 rounded-lg"
               />
             </div>
-            <h2 className="text-3xl italic">Weight Unit:</h2>
-            <select
-              name="weight_unit"
-              value={user.weight_unit}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            >
-              <option value="lbs">Pounds (lbs)</option>
-              <option value="kg">Kilograms (kg)</option>
-            </select>
-            <div className="flex space-x-4">
+            <div>
               <button className="survey-nav-button" onClick={previousStep}>
                 Back
               </button>
@@ -385,38 +395,11 @@ const FitnessSurvey = () => {
             </div>
           </div>
         );
-      // Age Survey Question
+      // Gender Survey Question
       case 5:
         return (
           <div className="flex flex-col items-center">
-            <h2 className="text-3xl italic">What is your Age?</h2>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Age:
-              </label>
-              <input
-                type="number"
-                name="age"
-                value={user.age}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div className="flex space-x-4">
-              <button className="survey-nav-button" onClick={previousStep}>
-                Back
-              </button>
-              <button className="survey-nav-button" onClick={nextStep}>
-                Next
-              </button>
-            </div>
-          </div>
-        );
-      // Gender Submission Buttons
-      case 6:
-        return (
-          <div className="flex flex-col items-center">
-            <h2 className="text-3xl italic">What is your gender?</h2>
+            <h2 className="text-3xl italic">What is your Gender?</h2>
             <button
               className="survey-button"
               onClick={() => handleGenderSelection("male")}
@@ -429,27 +412,34 @@ const FitnessSurvey = () => {
             >
               Female
             </button>
-            <button className="survey-nav-button" onClick={previousStep}>
-              Back
+            <button
+              className="survey-button"
+              onClick={() => handleGenderSelection("other")}
+            >
+              Other
             </button>
-            {error && <div className="text-red-500">{error}</div>}
+            <div>
+              <button className="survey-nav-button" onClick={previousStep}>
+                Back
+              </button>
+            </div>
           </div>
         );
-      default:
+      // Display WeeklyFitnessPlan after survey is completed
+      case 6:
         return (
           <div className="flex flex-col items-center">
-            <h2 className="text-3xl italic">Your Weekly Fitness Plan</h2>
+            <h2 className="text-3xl italic">Weekly Fitness Plan</h2>
             <WeeklyFitnessPlan userId={user._id} />
           </div>
         );
+      default:
+        console.log(error);
+        return null;
     }
   };
 
-  return (
-    <div className="flex flex-col items-center px-14 py-20 mx-auto w-full text-2xl bg-lime-200 max-w-[480px]">
-      {renderStep()}
-    </div>
-  );
+  return <div>{renderStep()}</div>;
 };
 
 export default FitnessSurvey;

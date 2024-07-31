@@ -123,6 +123,7 @@ const getExerciseFilter = (user) => {
 // CREATE weekly workout list. This also creates the daily workout lists and the workout cards.
 app.post("/createWeeklyPlan", async (req, res) => {
   const { user } = req.body;
+  console.log("createWeeklyPlan", user);
 
   // Validate input
   if (!user) {
@@ -239,7 +240,7 @@ app.post("/createWeeklyPlan", async (req, res) => {
 // CREATE userprofile (from fitness survey)
 app.post("/createprofile", async (req, res) => {
   const newUserData = {
-    email_address: req.body.email,
+    email_address: req.body.email_address,
     password: req.body.password,
     name: req.body.name,
     age: req.body.age,
