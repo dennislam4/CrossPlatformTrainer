@@ -502,6 +502,25 @@ app.put("/daily-workouts/:userId/:day", async (req, res) => {
   }
 });
 
+app.get("/users", async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (error) {
+    res.status(400).json({ error: "Request to retrieve users failed" });
+  }
+});
+
+app.get("/exercises", async (req, res) => {
+  try {
+    const filter = getExerciseFilter(req.body);
+    const exercises = await Exercise.find(filter);
+    res.json(exercises);
+  } catch (error) {
+    res.status(400).json({ error: "Request to retrieve exercises failed" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
 });
