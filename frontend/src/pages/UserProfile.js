@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 // Initialize the UserProfile component
 const UserProfile = () => {
@@ -12,45 +12,61 @@ const UserProfile = () => {
     { id: 6, src: "/images/woman_3.png", alt: "Avatar 6" },
   ];
 
-  // Use the useLocation hook to access the user object passed from the SignIn component
+  let { userId } = useParams();
   const location = useLocation();
   const signedInUser = location.state?.user;
+  if (signedInUser) {
+    userId = signedInUser._id;
+  }
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Blank and preset values for default user profile
   const [user, setUser] = useState({
     avatar: avatars[0].src,
     name: "",
-    email: "",
+    email_address: "",
     password: "",
     age: "",
-    height: "",
     weight: "",
     fitness_level: "",
     fitness_goal: "",
     body_type: "",
-    height_unit: "imperial",
+    height_unit: "",
     height_feet: "",
     height_inches: "",
     height_meters: "",
     height_centimeters: "",
-    weight_unit: "lbs",
+    weight_unit: "",
   });
 
-  // Handle the avatar image change
+  useEffect(() => {
+    const fetchUserData = async (userId) => {
+      try {
+        const response = await fetch(`/userprofile/${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          const errorMsg = await response.json();
+          setError(errorMsg.error || "An error occurred. Please try again.");
+        }
+      } catch (error) {
+        setError("An error occurred. Please try again.");
+      }
+    };
+
+    if (userId) {
+      fetchUserData(userId);
+    } else if (signedInUser) {
+      setUser(signedInUser);
+    }
+  }, [userId, signedInUser]);
+
   const handleAvatarChange = (selectedAvatar) => {
     setUser({ ...user, avatar: selectedAvatar });
   };
 
-  // Set the user state to the signed-in user object if available
-  useEffect(() => {
-    if (signedInUser) {
-      setUser(signedInUser);
-    }
-  }, [signedInUser]);
-
-  // Handle the form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({
@@ -59,7 +75,6 @@ const UserProfile = () => {
     });
   };
 
-  // Handle the form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -84,23 +99,20 @@ const UserProfile = () => {
     }
   };
 
-  // Handle the unit change for height
   const handleHeightUnitChange = (e) => {
     setUser({
       ...user,
-      heightUnit: e.target.value,
+      height_unit: e.target.value, // Updated property name
     });
   };
 
-  // Handle the unit change for weight
   const handleWeightUnitChange = (e) => {
     setUser({
       ...user,
-      weightUnit: e.target.value,
+      weight_unit: e.target.value, // Updated property name
     });
   };
 
-  // Return the UserProfile component with form inputs
   return (
     <div className="max-w-md mx-auto p-6 border border-gray-300 rounded-lg bg-white">
       <h2 className="text-2xl font-bold text-center mb-6">Edit Profile</h2>
@@ -143,8 +155,8 @@ const UserProfile = () => {
           </label>
           <input
             type="email"
-            name="email"
-            value={user.email}
+            name="email_address"
+            value={user.email_address}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-lg"
           />
@@ -187,7 +199,7 @@ const UserProfile = () => {
             <option value="metric">Metric (m/cm)</option>
           </select>
         </div>
-        {user.heightUnit === "imperial" ? (
+        {user.height_unit === "imperial" ? (
           <>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -325,5 +337,5 @@ const UserProfile = () => {
     </div>
   );
 };
-// export the UserProfile component
+
 export default UserProfile;
