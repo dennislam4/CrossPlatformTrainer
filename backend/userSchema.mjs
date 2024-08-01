@@ -41,7 +41,7 @@ userSchema.statics.getUserByEmailAndPassword = async function (
 ) {
   const user = await this.findOne({ email_address: email_address });
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("User with this email address not found");
   }
   const storedPassword = user.password;
   if (isBcryptHash(storedPassword)) {
