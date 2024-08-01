@@ -35,7 +35,11 @@ function SignUp() {
         navigate("/fitnesssurvey", { state: { user } });
       } else {
         const errorMsg = await response.json();
-        setError(errorMsg.message || "An error occurred. Please try again.");
+        setError(errorMsg.error);
+        setTimeout(() => {
+          setError("");
+          navigate("/signin");
+        }, 1000);
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
