@@ -13,7 +13,7 @@ const FitnessSurvey = () => {
   if (newUser) {
     userId = newUser._id;
   }
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [step, setStep] = useState(0);
   const [user, setUser] = useState({
@@ -64,6 +64,7 @@ const FitnessSurvey = () => {
 
   // Handle the form submission
   const handleSubmit = async (updatedUser) => {
+    setIsSubmitting(true);
     try {
       const { _id: userId, fitness_level, fitness_goal } = updatedUser;
       // Validate input
@@ -75,7 +76,7 @@ const FitnessSurvey = () => {
         console.error("fitness_goal is required");
         return;
       }
-      // Create the user profile using the updated user object
+      // Update the user profile using the updated user object
       const userProfileResponse = await fetch("/updateprofile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -117,6 +118,8 @@ const FitnessSurvey = () => {
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -408,18 +411,24 @@ const FitnessSurvey = () => {
             </button>
             <button
               className="survey-button"
+              disabled={isSubmitting}
               onClick={() => handleGenderSelection("female")}
             >
               Female
             </button>
             <button
               className="survey-button"
+              disabled={isSubmitting}
               onClick={() => handleGenderSelection("other")}
             >
               Other
             </button>
             <div>
-              <button className="survey-nav-button" onClick={previousStep}>
+              <button
+                className="survey-nav-button"
+                disabled={isSubmitting}
+                onClick={previousStep}
+              >
                 Back
               </button>
             </div>

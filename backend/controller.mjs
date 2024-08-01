@@ -372,33 +372,50 @@ app.delete("/workoutcards/:_id", (req, res) => {
     });
 });
 
+// DELETE user
+app.delete("/userprofile/:_id", (req, res) => {
+  fitnessDb
+    .deleteModelById(User, req.params._id)
+    .then((deletedCount) => {
+      if (deletedCount === 1) {
+        res.status(204).send();
+      } else {
+        res.status(404).json({ Error: "This user not found" });
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(400).send({ error: "Request to delete this user failed" });
+    });
+});
+
 // UPDATE controller ************************************
 app.put("/updateprofile", async (req, res) => {
-  const _id = req.body._id;
+  const { user } = req.body;
+  const _id = user._id;
   const revisedUserData = {
-    email_address: req.body.email,
-    password: req.body.password,
-    name: req.body.name,
-    age: req.body.age,
-    weight: req.body.weight,
-    height_unit: req.body.height_unit,
-    weight_unit: req.body.weight_unit,
-    fitness_level: req.body.fitness_level,
-    fitness_goal: req.body.fitness_goal,
-    body_type: req.body.body_type,
-    height_feet: req.body.height_feet,
-    height_inches: req.body.height_inches,
-    height_meters: req.body.height_meters,
-    height_centimeters: req.body.height_centimeters,
-    avatar: req.body.avatar,
+    email_address: user.email_address,
+    password: user.password,
+    name: user.name,
+    age: user.age,
+    weight: user.weight,
+    height_unit: user.height_unit,
+    weight_unit: user.weight_unit,
+    fitness_level: user.fitness_level,
+    fitness_goal: user.fitness_goal,
+    body_type: user.body_type,
+    height_feet: user.height_feet,
+    height_inches: user.height_inches,
+    height_meters: user.height_meters,
+    height_centimeters: user.height_centimeters,
+    avatar: user.avatar,
+    calculate_as_gender: user.calculate_as_gender,
   };
   try {
     // Update the user document by _id and return the updated document
-    const updatedUser = await User.findByIdAndUpdate(
-      _id,
-      revisedUserData,
-      { new: true } // Return the updated document
-    );
+    const updatedUser = await User.findByIdAndUpdate(_id, revisedUserData, {
+      new: true,
+    });
 
     if (updatedUser) {
       res.status(200).json(updatedUser);
