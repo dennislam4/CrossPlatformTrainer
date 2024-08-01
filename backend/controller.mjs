@@ -21,6 +21,37 @@ app.use(
 
 app.use(express.json());
 
+// Calculate daily calorie expenditure for user as well as BMI
+const calculateCaloriesandBMI = (user) => {
+  const { calculate_as_gender, weight, weight_unit, height_unit, height_meters, height_centimeters, height_feet, height_inches, age, fitness_level } = user;
+
+  // Unit conversions (convert everything to metric units for calculations)
+  const weightInKg = weight_unit === "lbs" ? weight * 0.453592 : weight;
+
+  const heightInMeters = height_unit === "imperial"
+      ? (height_feet * 12 + height_inches) * 0.0254
+      : height_meters + height_centimeters / 100;
+
+  // Calculate BMR (Basal Metabolic Rate) using the Mifflin-St Jeor equation
+  let bmr;
+  if (calculate_as_gender === "male") {
+    bmr = 10 * weightInKg + 6.25 * heightInMeters * 100 - 5 * age + 5;
+  } else if (calculate_as_gender === "female") {
+    bmr = 10 * weightInKg + 6.25 * heightInMeters * 100 - 5 * age - 161;
+  } else {
+    // Default calculation if gender is not specified or is "other"
+    bmr = (10 * weightInKg + 6.25 * heightInMeters * 100 - 5 * age + (5 - 161) / 2);
+  }
+
+  // Calculate daily calorie expenditure based on fitness level
+  const fitnessLevelScore = fitness_level === "Beginner" ? 1.2 : fitness_level === "Intermediate" ? 1.375 : fitness_level === "Advanced" ? 1.55 : 1.725;
+  const dailyCalories = bmr * fitnessLevelScore;
+
+  // Calculate BMI (Body Mass Index)
+  const bmi = weightInKg / (heightInMeters * heightInMeters);
+  return { dailyCalories, bmi };
+}
+
 // SIGN IN controller ******************************************
 app.post("/signin", async (req, res) => {
   const email_address = req.body.email_address;
@@ -395,6 +426,7 @@ app.delete("/userprofile/:_id", (req, res) => {
 app.put("/updateprofile", async (req, res) => {
   const { user } = req.body;
   const _id = user._id;
+  const { dailyCalories, bmi } = calculateCaloriesandBMI(user);
   const revisedUserData = {
     email_address: user.email_address,
     password: user.password,
@@ -412,6 +444,8 @@ app.put("/updateprofile", async (req, res) => {
     height_centimeters: user.height_centimeters,
     avatar: user.avatar,
     calculate_as_gender: user.calculate_as_gender,
+    daily_calories: dailyCalories,
+    bmi: bmi
   };
   try {
     // Update the user document by _id and return the updated document
