@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 // Initialize the UserProfile component
 const UserProfile = () => {
@@ -14,7 +14,9 @@ const UserProfile = () => {
 
   let { userId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const signedInUser = location.state?.user;
+
   if (signedInUser) {
     userId = signedInUser._id;
   }
@@ -38,6 +40,8 @@ const UserProfile = () => {
     height_meters: "",
     height_centimeters: "",
     weight_unit: "",
+    daily_calories: "",
+    bmi: ""
   });
 
   useEffect(() => {
@@ -83,13 +87,16 @@ const UserProfile = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(user),
+        body: JSON.stringify({ user }),
       });
       if (response.ok) {
         setSuccess("User profile updated successfully.");
         setError("");
         const updatedUser = await response.json();
         setUser(updatedUser);
+        navigate(`/Dashboard/${updatedUser._id}`, {
+          state: { userId: updatedUser._id },
+        });
       } else {
         const errorMsg = await response.json();
         setError(errorMsg.error || "An error occurred. Please try again.");
@@ -123,17 +130,17 @@ const UserProfile = () => {
           </label>
           <div className="flex space-x-2">
             {avatars.map((avatar) => (
-              <img
-                key={avatar.id}
-                src={avatar.src}
-                alt={avatar.alt}
-                className={`w-12 h-12 cursor-pointer rounded-full ${
-                  user.avatar === avatar.src
-                    ? "ring-2 ring-blue-500"
-                    : "ring-1 ring-gray-300"
-                }`}
-                onClick={() => handleAvatarChange(avatar.src)}
-              />
+                <img
+                    key={avatar.id}
+                    src={avatar.src}
+                    alt={avatar.alt}
+                    className={`w-12 h-12 cursor-pointer rounded-full ${
+                        user.avatar === avatar.src
+                            ? "ring-2 ring-blue-500"
+                            : "ring-1 ring-gray-300"
+                    }`}
+                    onClick={() => handleAvatarChange(avatar.src)}
+                />
             ))}
           </div>
         </div>
@@ -142,11 +149,11 @@ const UserProfile = () => {
             Name:
           </label>
           <input
-            type="text"
-            name="name"
-            value={user.name}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+              type="text"
+              name="name"
+              value={user.name}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
           />
         </div>
         <div>
@@ -154,11 +161,11 @@ const UserProfile = () => {
             Email:
           </label>
           <input
-            type="email"
-            name="email_address"
-            value={user.email_address}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+              type="email"
+              name="email_address"
+              value={user.email_address}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
           />
         </div>
         <div>
@@ -166,11 +173,11 @@ const UserProfile = () => {
             Password:
           </label>
           <input
-            type="password"
-            name="password"
-            value={user.password}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+              type="password"
+              name="password"
+              value={user.password}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
           />
         </div>
         <div>
@@ -178,11 +185,11 @@ const UserProfile = () => {
             Age:
           </label>
           <input
-            type="number"
-            name="age"
-            value={user.age}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+              type="number"
+              name="age"
+              value={user.age}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
           />
         </div>
         <div>
@@ -190,86 +197,86 @@ const UserProfile = () => {
             Height Unit:
           </label>
           <select
-            name="height_unit"
-            value={user.height_unit}
-            onChange={handleHeightUnitChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+              name="height_unit"
+              value={user.height_unit}
+              onChange={handleHeightUnitChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
           >
             <option value="imperial">Imperial (ft/in)</option>
             <option value="metric">Metric (m/cm)</option>
           </select>
         </div>
         {user.height_unit === "imperial" ? (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Height (Feet):
-              </label>
-              <input
-                type="number"
-                name="height_feet"
-                value={user.height_feet}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Height (Inches):
-              </label>
-              <input
-                type="number"
-                name="height_inches"
-                value={user.height_inches}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-          </>
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Height (Feet):
+                </label>
+                <input
+                    type="number"
+                    name="height_feet"
+                    value={user.height_feet}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Height (Inches):
+                </label>
+                <input
+                    type="number"
+                    name="height_inches"
+                    value={user.height_inches}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+            </>
         ) : (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Height (Meters):
-              </label>
-              <input
-                type="number"
-                name="height_meters"
-                value={user.height_meters}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Height (Centimeters):
-              </label>
-              <input
-                type="number"
-                name="height_centimeters"
-                value={user.height_centimeters}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-          </>
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Height (Meters):
+                </label>
+                <input
+                    type="number"
+                    name="height_meters"
+                    value={user.height_meters}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Height (Centimeters):
+                </label>
+                <input
+                    type="number"
+                    name="height_centimeters"
+                    value={user.height_centimeters}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+            </>
         )}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Weight:
           </label>
           <input
-            type="number"
-            name="weight"
-            value={user.weight}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+              type="number"
+              name="weight"
+              value={user.weight}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
           />
           <select
-            name="weight_unit"
-            value={user.weight_unit}
-            onChange={handleWeightUnitChange}
-            className="w-full mt-2 p-2 border border-gray-300 rounded-lg"
+              name="weight_unit"
+              value={user.weight_unit}
+              onChange={handleWeightUnitChange}
+              className="w-full mt-2 p-2 border border-gray-300 rounded-lg"
           >
             <option value="lbs">lbs</option>
             <option value="kgs">kgs</option>
@@ -280,10 +287,10 @@ const UserProfile = () => {
             Fitness Level:
           </label>
           <select
-            name="fitness_level"
-            value={user.fitness_level}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+              name="fitness_level"
+              value={user.fitness_level}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
           >
             <option value="">Select Fitness Level</option>
             <option value="Beginner">Beginner</option>
@@ -296,10 +303,10 @@ const UserProfile = () => {
             Fitness Goal:
           </label>
           <select
-            name="fitness_goal"
-            value={user.fitness_goal}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+              name="fitness_goal"
+              value={user.fitness_goal}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
           >
             <option value="">Select Fitness Goal</option>
             <option value="Lose Weight">Lose Weight</option>
@@ -314,10 +321,10 @@ const UserProfile = () => {
             Body Type:
           </label>
           <select
-            name="body_type"
-            value={user.body_type}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+              name="body_type"
+              value={user.body_type}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
           >
             <option value="">Select Body Type</option>
             <option value="Ectomorph">Ectomorph</option>
@@ -325,9 +332,35 @@ const UserProfile = () => {
             <option value="Endomorph">Endomorph</option>
           </select>
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Daily Calorie Expenditure:
+          </label>
+          <input
+              type="number"
+              name="daily_calories"
+              value={user.daily_calories}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              disabled
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            BMI:
+          </label>
+          <input
+              type="number"
+              name="bmi"
+              value={user.bmi}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              disabled
+          />
+        </div>
         <button
-          type="submit"
-          className="p-3 mt-4 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-700"
+            type="submit"
+            className="p-3 mt-4 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-700"
         >
           Submit
         </button>
