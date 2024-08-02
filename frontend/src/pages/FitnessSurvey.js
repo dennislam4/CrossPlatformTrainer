@@ -29,6 +29,8 @@ const FitnessSurvey = () => {
     height_centimeters: "",
     weight_unit: "lbs",
     calculate_as_gender: "",
+    bmi: "",
+    daily_calories: "",
     email_address: newUser?.email_address || "",
     password: newUser?.password || "",
     _id: newUser?._id || userId || "",

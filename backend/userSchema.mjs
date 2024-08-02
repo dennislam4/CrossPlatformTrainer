@@ -20,6 +20,8 @@ const userSchema = mongoose.Schema({
   height_inches: { type: Number },
   height_meters: { type: Number },
   height_centimeters: { type: Number },
+  bmi: { type: Number },
+  daily_calories: { type: Number },
 });
 
 userSchema.pre("save", async function (next) {

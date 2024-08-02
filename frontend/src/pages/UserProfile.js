@@ -40,6 +40,8 @@ const UserProfile = () => {
     height_meters: "",
     height_centimeters: "",
     weight_unit: "",
+    bmi: "",
+    daily_calories: "",
   });
 
   useEffect(() => {
@@ -330,18 +332,32 @@ const UserProfile = () => {
             <option value="Endomorph">Endomorph</option>
           </select>
         </div>
-         <div>
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Daily Calorie Expenditure:
           </label>
-          <input type="number" name="daily_calories" value={user.daily_calories} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg" disabled/>
+          <input
+            type="number"
+            name="daily_calories"
+            value={user.daily_calories}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-lg"
+            disabled
+          />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             BMI:
           </label>
-          <input type="number" name="bmi" value={user.bmi} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg" disabled/>
-        </div>      
+          <input
+            type="number"
+            name="bmi"
+            value={user.bmi}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-lg"
+            disabled
+          />
+        </div>
         <button
           type="submit"
           className="p-3 mt-4 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-700"

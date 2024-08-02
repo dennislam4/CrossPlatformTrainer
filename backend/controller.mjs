@@ -23,12 +23,24 @@ app.use(express.json());
 
 // Calculate daily calorie expenditure for user as well as BMI
 const calculateCaloriesandBMI = (user) => {
-  const { calculate_as_gender, weight, weight_unit, height_unit, height_meters, height_centimeters, height_feet, height_inches, age, fitness_level } = user;
+  const {
+    calculate_as_gender,
+    weight,
+    weight_unit,
+    height_unit,
+    height_meters,
+    height_centimeters,
+    height_feet,
+    height_inches,
+    age,
+    fitness_level,
+  } = user;
 
   // Unit conversions (convert everything to metric units for calculations)
   const weightInKg = weight_unit === "lbs" ? weight * 0.453592 : weight;
 
-  const heightInMeters = height_unit === "imperial"
+  const heightInMeters =
+    height_unit === "imperial"
       ? (height_feet * 12 + height_inches) * 0.0254
       : height_meters + height_centimeters / 100;
 
@@ -40,17 +52,25 @@ const calculateCaloriesandBMI = (user) => {
     bmr = 10 * weightInKg + 6.25 * heightInMeters * 100 - 5 * age - 161;
   } else {
     // Default calculation if gender is not specified or is "other"
-    bmr = (10 * weightInKg + 6.25 * heightInMeters * 100 - 5 * age + (5 - 161) / 2);
+    bmr =
+      10 * weightInKg + 6.25 * heightInMeters * 100 - 5 * age + (5 - 161) / 2;
   }
 
   // Calculate daily calorie expenditure based on fitness level
-  const fitnessLevelScore = fitness_level === "Beginner" ? 1.2 : fitness_level === "Intermediate" ? 1.375 : fitness_level === "Advanced" ? 1.55 : 1.725;
+  const fitnessLevelScore =
+    fitness_level === "Beginner"
+      ? 1.2
+      : fitness_level === "Intermediate"
+      ? 1.375
+      : fitness_level === "Advanced"
+      ? 1.55
+      : 1.725;
   const dailyCalories = bmr * fitnessLevelScore;
 
   // Calculate BMI (Body Mass Index)
   const bmi = weightInKg / (heightInMeters * heightInMeters);
   return { dailyCalories, bmi };
-}
+};
 
 // SIGN IN controller ******************************************
 app.post("/signin", async (req, res) => {
@@ -288,6 +308,8 @@ app.post("/createprofile", async (req, res) => {
     height_meters: req.body.height_meters,
     height_centimeters: req.body.height_centimeters,
     avatar: req.body.avatar,
+    bmi: req.body.bmi,
+    daily_calories: req.body.daily_calories,
   };
   try {
     const newUser = await fitnessDb.createDocument(User, newUserData);
@@ -445,7 +467,7 @@ app.put("/updateprofile", async (req, res) => {
     avatar: user.avatar,
     calculate_as_gender: user.calculate_as_gender,
     daily_calories: dailyCalories,
-    bmi: bmi
+    bmi: bmi,
   };
   try {
     // Update the user document by _id and return the updated document
