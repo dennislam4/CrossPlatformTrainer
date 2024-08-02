@@ -10,6 +10,7 @@ import DailyWorkoutList from "./pages/DailyWorkoutList.js";
 import WeeklyFitnessPlan from "./pages/WeeklyFitnessPlan.js";
 import Dashboard from "./pages/Dashboard.js";
 import Sidebar from "./components/Sidebar";
+import WorkoutCard from "./pages/WorkoutCard.js";
 
 // Hide sidebar on home, sign-in, sign-up, and dashboard pages
 const AppContent = ({ handleLogout }) => {
