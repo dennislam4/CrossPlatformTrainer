@@ -19,9 +19,9 @@ const Sidebar = ({ handleLogout }) => {
             <Link to="/userprofile/:userId" className="block px-4 py-2 italic font-bold text-black bg-white border border-black border-solid rounded hover:bg-violet-300">
                 User Profile
             </Link>
-            <Link onClick={handleLogout} className="block px-4 py-2 italic font-bold text-black bg-white border border-black border-solid rounded hover:bg-violet--300">
+            <button onClick={handleLogout} className="block px-4 py-2 italic font-bold text-black bg-white border border-black border-solid rounded hover:bg-violet--300">
                 Logout
-            </Link>
+            </button>
         </div>
     );
 };
