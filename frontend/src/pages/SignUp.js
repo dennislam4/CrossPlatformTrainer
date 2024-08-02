@@ -39,10 +39,10 @@ function SignUp() {
         setTimeout(() => {
           setError("");
           navigate("/signin");
-        }, 1000);
+        }, 2000);
       }
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      setError("An error occurred. Please try signing in again.");
     }
   };
   return (

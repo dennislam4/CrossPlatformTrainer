@@ -30,7 +30,13 @@ function SignIn() {
         navigate(`/Dashboard/${user._id}`, { state: { userId: user._id } });
       } else {
         const errorMsg = await response.json();
-        setError(errorMsg.message || "An error occurred. Please try again.");
+        setError(errorMsg.error || "An error occurred. Please try again.");
+        if (errorMsg.error === "User not found.") {
+          setTimeout(() => {
+            setError("");
+            navigate("/signup");
+          }, 1000);
+        }
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
@@ -78,4 +84,3 @@ function SignIn() {
 }
 
 export default SignIn;
-
