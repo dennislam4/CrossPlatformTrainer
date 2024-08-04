@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import WorkoutCard from "./WorkoutCard";
 import RestDay from "./RestDay";
 
-const DailyWorkoutList = ({ userId, day }) => {
+const DailyWorkoutList = (props) => {
+  const params = useParams();
   const [dailyWorkout, setDailyWorkout] = useState([]);
   const [workoutCards, setWorkoutCards] = useState([]);
   const [error, setError] = useState(null);
+  const userId = props.userId || params.userId;
+  const day = props.day || params.day;
 
   useEffect(() => {
     if (!userId || !day) return;
