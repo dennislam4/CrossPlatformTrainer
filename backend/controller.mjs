@@ -342,10 +342,8 @@ app.get("/workoutcards/:_id", async (req, res) => {
       req.params._id
     );
     if (!workoutcard) {
-      // console.log("Workout card not found");
       return res.status(404).json({ error: "Workout card not found" });
     }
-    // console.log("Workout card found:", workoutcard);
     res.json(workoutcard);
   } catch (error) {
     console.error("Error fetching workout card:", error);
