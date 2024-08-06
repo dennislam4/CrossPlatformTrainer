@@ -1,1 +1,1 @@
-web: node --experimental-modules controller.mjs
+web: cd backend && npm install && npm start
