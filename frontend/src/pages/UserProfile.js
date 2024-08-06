@@ -23,7 +23,6 @@ const UserProfile = () => {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
   const [user, setUser] = useState({
     avatar: avatars[0].src,
     name: "",
@@ -44,6 +43,7 @@ const UserProfile = () => {
     daily_calories: "",
   });
 
+  // Handle fetching user data
   useEffect(() => {
     const fetchUserData = async (userId) => {
       try {
@@ -67,18 +67,42 @@ const UserProfile = () => {
     }
   }, [userId, signedInUser]);
 
+  // Handle avatar change
   const handleAvatarChange = (selectedAvatar) => {
     setUser({ ...user, avatar: selectedAvatar });
   };
 
-  const handleChange = (e) => {
+  // Handle form input change
+  const handleChange = async (e) => {
     const { name, value } = e.target;
-    setUser({
-      ...user,
+    setUser((prevUser) => ({
+      ...prevUser,
       [name]: value,
-    });
+    }));
+
+    // If fitness level or fitness goal changes, generate a new fitness plan
+    if (name === "fitness_level" || name === "fitness_goal") {
+      const updatedUser = {
+        ...user,
+        [name]: value,
+      };
+
+      const response = await fetch("/createWeeklyPlan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user: updatedUser }),
+      });
+
+      if (response.ok) {
+        const updatedPlan = await response.json();
+        console.log("New fitness plan generated:", updatedPlan);
+      }
+    }
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -105,18 +129,20 @@ const UserProfile = () => {
       setError("An error occurred. Please try again.");
     }
   };
+  
 
   const handleHeightUnitChange = (e) => {
     setUser({
       ...user,
-      height_unit: e.target.value, // Updated property name
+      height_unit: e.target.value, 
     });
   };
+  
 
   const handleWeightUnitChange = (e) => {
     setUser({
       ...user,
-      weight_unit: e.target.value, // Updated property name
+      weight_unit: e.target.value, 
     });
   };
 
