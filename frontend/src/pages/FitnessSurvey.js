@@ -23,14 +23,14 @@ const FitnessSurvey = () => {
     fitness_goal: "",
     body_type: "",
     height_unit: "imperial",
-    height_feet: "",
-    height_inches: "",
-    height_meters: "",
-    height_centimeters: "",
+    height_feet: 0,
+    height_inches: 0,
+    height_meters: 0,
+    height_centimeters: 0,
     weight_unit: "lbs",
     calculate_as_gender: "",
-    bmi: "",
-    daily_calories: "",
+    bmi: 0,
+    daily_calories: 0,
     email_address: newUser?.email_address || "",
     password: newUser?.password || "",
     _id: newUser?._id || userId || "",
@@ -72,19 +72,22 @@ const FitnessSurvey = () => {
       // Validate input
       if (!userId) {
         console.error("User ID is required.");
+        return;
       } else if (!fitness_level) {
         console.error("fitness_level is required");
+        return;
       } else if (!fitness_goal) {
         console.error("fitness_goal is required");
         return;
       }
+
       // Update the user profile using the updated user object
       const userProfileResponse = await fetch("/updateprofile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user: updatedUser,
-          email: updatedUser.email_address,
+          email_address: updatedUser.email_address,
         }), // Use the entire user object. Account for different field names
       });
       if (userProfileResponse.ok) {
@@ -103,15 +106,17 @@ const FitnessSurvey = () => {
         },
         body: JSON.stringify({ user: updatedUser }), // Use the entire user object
       });
-
       if (fitnessPlanResponse.ok) {
         const fitnessPlanData = await fitnessPlanResponse.json();
         console.log("Weekly Fitness Plan created:", fitnessPlanData);
 
-        // Navigate to the Dashboard
-        navigate(`/Dashboard/${userId}`, {
-          state: { user: updatedUser },
-        });
+        // Add a small delay
+        setTimeout(() => {
+          // Navigate to the Dashboard
+          navigate(`/Dashboard/${userId}`, {
+            state: { user: updatedUser },
+          });
+        }, 1000);
       } else {
         const errorMsg = await fitnessPlanResponse.json();
         setError(
@@ -408,6 +413,7 @@ const FitnessSurvey = () => {
             <button
               className="survey-button"
               onClick={() => handleGenderSelection("male")}
+              disable={isSubmitting}
             >
               Male
             </button>
