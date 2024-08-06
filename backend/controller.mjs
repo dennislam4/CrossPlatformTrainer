@@ -582,6 +582,11 @@ app.get("/exercises", async (req, res) => {
   }
 });
 
+// Add Root Route
+app.get('/', (req, res) => {
+  res.send('Backend server is running.');
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
 });
