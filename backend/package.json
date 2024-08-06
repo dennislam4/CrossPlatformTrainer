@@ -1,6 +1,10 @@
 {
   "name": "crossplatformtrainer",
   "version": "1.0.0",
+  "engines": {
+    "node": "18.14.0",
+    "npm": "9.3.1"
+  },
   "description": "Backend for ONLINE CAPSTONE PROJECT (CS_467)",
   "main": "controller.mjs",
   "scripts": {
