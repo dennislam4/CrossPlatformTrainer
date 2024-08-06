@@ -176,37 +176,24 @@ const getExerciseFilter = (user) => {
 // CREATE weekly workout list. This also creates the daily workout lists and the workout cards.
 app.post("/createWeeklyPlan", async (req, res) => {
   const { user } = req.body;
-  console.log("createWeeklyPlan", user);
 
   // Validate input
-  if (!user) {
-    return res.status(400).json({ error: "User object is required." });
+  if (!user || !user._id) {
+    return res
+      .status(400)
+      .json({ error: "User object with valid _id is required." });
   }
 
   try {
-    // Convert user_id to ObjectId
-    user.user_id = mongoose.Types.ObjectId(user.user_id);
+    // Convert user._id to ObjectId if necessary
+    const userId = mongoose.Types.ObjectId(user._id);
 
-    // Check if a WeeklyFitnessPlan already exists for the user
-    const existingPlan = await WeeklyFitnessPlan.findOne({
-      user_id: user.user_id,
-    });
-
-    // If an existing plan is found, delete it
-    if (existingPlan) {
-      await WeeklyFitnessPlan.deleteOne({ _id: existingPlan._id });
-
-      // Delete any existing daily workouts and workout cards for the user
-      await DailyWorkout.deleteMany({ user_id: user.user_id });
-      await WorkoutCard.deleteMany({ user_id: user.user_id });
-    }
-
-    const filter = getExerciseFilter(user);
+    const filter = getExerciseFilter({ ...user, _id: userId });
 
     const exercises = await Exercise.find(filter);
     const weeklyPlan = {
       workouts: [],
-      user_id: user.user_id,
+      user_id: userId,
     };
 
     // Determine number of weekly workouts based on fitness level
@@ -248,7 +235,7 @@ app.post("/createWeeklyPlan", async (req, res) => {
               time: 0,
               time_unit: "seconds",
               is_completed: false,
-              user_id: user.user_id,
+              user_id: userId,
             });
             return workoutCard.save();
           })
@@ -258,7 +245,7 @@ app.post("/createWeeklyPlan", async (req, res) => {
         const dailyWorkout = new DailyWorkout({
           name: getDayName(i + 1),
           force: selectedForce,
-          user_id: user.user_id,
+          user_id: userId,
           workout_cards: dailyWorkoutCards.map((card) => card._id),
         });
         const savedDailyWorkout = await dailyWorkout.save();
@@ -271,7 +258,7 @@ app.post("/createWeeklyPlan", async (req, res) => {
         const dailyWorkout = new DailyWorkout({
           name: getDayName(i + 1),
           force: "rest",
-          user_id: user.user_id,
+          user_id: userId,
           workout_cards: [],
         });
         const savedDailyWorkout = await dailyWorkout.save();
