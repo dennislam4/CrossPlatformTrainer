@@ -413,7 +413,7 @@ const FitnessSurvey = () => {
             <button
               className="survey-button"
               onClick={() => handleGenderSelection("male")}
-              disable={isSubmitting}
+              disabled={isSubmitting}
             >
               Male
             </button>
