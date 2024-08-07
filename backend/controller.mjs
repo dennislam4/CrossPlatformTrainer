@@ -10,15 +10,13 @@ import WeeklyFitnessPlan from "./weeklyFitnessPlanSchema.mjs";
 import WorkoutCard from "./workoutCardSchema.mjs";
 
 const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGODB_CONNECT_STRING, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-  } catch (err) {
-    process.exit(1);
-  }
+  await mongoose.connect(process.env.MONGODB_CONNECT_STRING, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  console.log('MongoDB connected...');
 };
+connectDB();
 
 const PORT = process.env.PORT || 2355;
 const app = express();
