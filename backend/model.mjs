@@ -9,7 +9,10 @@ import DailyWorkout from "./dailyWorkoutSchema.mjs";
 import WorkoutCard from "./workoutCardSchema.mjs";
 
 // Connect based on the .env file parameters.
-mongoose.connect(process.env.MONGODB_CONNECT_STRING, { useNewUrlParser: true });
+mongoose
+  .connect(process.env.MONGODB_CONNECT_STRING, { useNewUrlParser: true })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 const db = mongoose.connection;
 
 // Confirm that the database has connected and print a message in the console.
