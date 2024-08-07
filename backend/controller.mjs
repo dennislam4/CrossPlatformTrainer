@@ -9,6 +9,17 @@ import DailyWorkout from "./dailyWorkoutSchema.mjs";
 import WeeklyFitnessPlan from "./weeklyFitnessPlanSchema.mjs";
 import WorkoutCard from "./workoutCardSchema.mjs";
 
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_CONNECT_STRING, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+  } catch (err) {
+    process.exit(1);
+  }
+};
+
 const PORT = process.env.PORT || 2355;
 const app = express();
 app.use(
