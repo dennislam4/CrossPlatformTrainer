@@ -24,6 +24,7 @@ function SignUp() {
   const handleSignUp = async () => {
     try {
       const response = await fetch("${API_URL}/signup", {
+      console.log("Sending request to:", `${API_URL}/signup`);
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -32,6 +33,7 @@ function SignUp() {
       });
       if (response.ok) {
         const user = await response.json();
+        console.log("Signup successful:", user);
         navigate("/fitnesssurvey", { state: { user } });
       } else {
         const errorMsg = await response.json();
@@ -42,6 +44,7 @@ function SignUp() {
         }, 2000);
       }
     } catch (error) {
+      console.error("An error occurred during signup:", error);
       setError("An error occurred. Please try signing in again.");
     }
   };
