@@ -2,8 +2,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = process.env.REACT_APP_API_URL;
-
 function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -25,7 +23,7 @@ function SignUp() {
 
   const handleSignUp = async () => {
     try {
-      console.log("Sending request to:", `${API_URL}/signup`);
+      console.log("Sending request to:", `/signup`);
       const response = await fetch("${API_URL}/signup", {
         method: "POST",
         headers: {
