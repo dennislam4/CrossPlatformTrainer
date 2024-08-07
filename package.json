@@ -2,10 +2,11 @@
   "name": "crossplatformtrainer",
   "version": "1.0.0",
   "description": "Backend for ONLINE CAPSTONE PROJECT (CS_467)",
-  "main": "controller.mjs",
+  "main": "backend/controller.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon controller.mjs"
+    "start": "nodemon backend/controller.mjs",
+    "heroku-postbuild": "cd backend && npm install"
   },
   "repository": {
     "type": "git",
@@ -27,5 +28,9 @@
     "express": "^4.19.2",
     "mongoose": "^6.3.2",
     "nodemon": "^2.0.16"
+  },
+  "engines": {
+    "node": "18.14.0",
+    "npm": "9.3.1"
   }
 }
