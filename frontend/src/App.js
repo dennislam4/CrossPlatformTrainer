@@ -17,9 +17,6 @@ import Dashboard from "./pages/Dashboard.js";
 import Sidebar from "./components/Sidebar";
 import WorkoutCard from "./pages/WorkoutCard.js";
 
-// API URL used to connect Heroku to Vercel
-const API_URL = process.env.REACT_APP_API_URL;
-
 // Hide sidebar on home, sign-in, sign-up, and dashboard pages
 const AppContent = ({ handleLogout }) => {
   const location = useLocation();
