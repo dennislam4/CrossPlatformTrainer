@@ -158,7 +158,7 @@ function WorkoutCard({
           >
             Save
           </button>
-          <Link to="/Nav">
+          <Link to="/Dashboard">
             <button className="self-start px-4 py-px mt-2.5 ml-5 text-base italic font-black leading-6 text-white whitespace-nowrap bg-black rounded-lg">
               Exit
             </button>
