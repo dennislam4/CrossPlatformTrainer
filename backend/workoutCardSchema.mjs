@@ -10,7 +10,7 @@ const workoutCardSchema = mongoose.Schema({
   intensity: { type: String },
   time: { type: Number },
   time_unit: { type: String },
-  is_completed: { type: Boolean, required: true, default: false },
+  is_completed: { type: Boolean, default: false },
 });
 
 const WorkoutCard = mongoose.model("WorkoutCard", workoutCardSchema);

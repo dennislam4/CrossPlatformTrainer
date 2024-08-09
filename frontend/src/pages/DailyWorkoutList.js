@@ -55,7 +55,8 @@ const DailyWorkoutList = (props) => {
         </div>
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">
-            {dailyWorkout.name}: {dailyWorkout.force}
+            {dailyWorkout.name}
+            {dailyWorkout.force !== "null" ? `: ${dailyWorkout.force}` : ""}
           </h2>
           {workoutCards.map((workout_card) => (
             <WorkoutCard
