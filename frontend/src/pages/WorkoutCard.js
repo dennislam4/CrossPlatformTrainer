@@ -9,6 +9,7 @@ function WorkoutCard({
   sets,
   time,
   intensity,
+  is_completed,
   _id,
 }) {
   const [workoutCard, setWorkoutCard] = useState({
@@ -20,8 +21,11 @@ function WorkoutCard({
     time,
     intensity,
     // Workout completion status set
-    completed: false, 
+    is_completed: false,
   });
+
+  const [userId, setUserId] = useState(null);
+
   useEffect(() => {
     const fetchWorkoutCardData = async () => {
       try {
@@ -29,6 +33,7 @@ function WorkoutCard({
         if (response.ok) {
           const data = await response.json();
           setWorkoutCard(data);
+          setUserId(data.user_id);
         } else {
           const errorMsg = await response.json();
           console.error(errorMsg);
@@ -43,12 +48,13 @@ function WorkoutCard({
     }
   }, [_id]);
 
-  // Handle the form input changes
+  // Handle form input changes, including checkbox
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, type, value, checked } = e.target;
+
     setWorkoutCard({
       ...workoutCard,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
@@ -158,7 +164,13 @@ function WorkoutCard({
             <div className="text-base font-medium leading-6 text-black">
               Completed
             </div>
-            <input type="checkbox" name="completed"checked={workoutCard.completed}onChange={handleChange} className="w-6 h-6" />
+            <input
+              type="checkbox"
+              name="is_completed"
+              checked={workoutCard.is_completed}
+              onChange={handleChange}
+              className="w-6 h-6"
+            />
           </div>
           <button
             className="self-end px-3 py-2 mt-2.5 text-base italic font-black leading-6 text-white whitespace-nowrap bg-black rounded-lg"
@@ -166,13 +178,7 @@ function WorkoutCard({
           >
             Save
           </button>
-          <button
-            className="self-end px-3 py-2 mt-2.5 text-base italic font-black leading-6 text-white whitespace-nowrap bg-black rounded-lg"
-            onClick={handleSubmit}
-          >
-            Save
-          </button>
-          <Link to="/Dashboard">
+          <Link to={`/Dashboard/${userId}`}>
             <button className="self-start px-4 py-px mt-2.5 ml-5 text-base italic font-black leading-6 text-white whitespace-nowrap bg-black rounded-lg">
               Exit
             </button>
