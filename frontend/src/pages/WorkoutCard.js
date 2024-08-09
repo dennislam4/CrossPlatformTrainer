@@ -19,6 +19,8 @@ function WorkoutCard({
     sets,
     time,
     intensity,
+    // Workout completion status set
+    completed: false, 
   });
   useEffect(() => {
     const fetchWorkoutCardData = async () => {
@@ -152,6 +154,18 @@ function WorkoutCard({
               onChange={handleChange}
             />
           </div>
+          <div className="flex gap-5 justify-end py-4 whitespace-nowrap border-t border-neutral-200">
+            <div className="text-base font-medium leading-6 text-black">
+              Completed
+            </div>
+            <input type="checkbox" name="completed"checked={workoutCard.completed}onChange={handleChange} className="w-6 h-6" />
+          </div>
+          <button
+            className="self-end px-3 py-2 mt-2.5 text-base italic font-black leading-6 text-white whitespace-nowrap bg-black rounded-lg"
+            onClick={handleSubmit}
+          >
+            Save
+          </button>
           <button
             className="self-end px-3 py-2 mt-2.5 text-base italic font-black leading-6 text-white whitespace-nowrap bg-black rounded-lg"
             onClick={handleSubmit}
