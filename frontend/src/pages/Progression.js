@@ -87,7 +87,7 @@ function Progression() {
         <div className="flex gap-5 py-4 whitespace-nowrap border-t border-neutral-200">
           <div className="self-start text-base font-medium text-black">BMI</div>
           <div className="flex-auto pl-36 text-xl text-zinc-600">
-            {user && user.bmi && user.bmi}
+            {user && user.bmi}
           </div>
         </div>
         <div className="flex gap-5 py-4 border-t border-neutral-200">
