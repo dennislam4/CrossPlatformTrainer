@@ -4,7 +4,18 @@ import { Link, useParams } from "react-router-dom";
 function Progression() {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
+  const [force, setForce] = useState(null);
   const [error, setError] = useState("");
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const day = daysOfWeek[new Date().getDay()];
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -21,11 +32,26 @@ function Progression() {
         setError("An error occurred. Please try again.");
       }
     };
+    const fetchCurrentWorkout = async () => {
+      try {
+        const response = await fetch(`/daily-workouts/${userId}/${day}`);
+        if (response.ok) {
+          const workoutData = await response.json();
+          setForce(workoutData.force);
+        } else {
+          const errorMsg = await response.json();
+          setError(errorMsg.error || "An error occurred. Please try again.");
+        }
+      } catch (error) {
+        setError(error || "An error occurred. Please try again.");
+      }
+    };
 
     if (userId) {
       fetchUserData();
+      fetchCurrentWorkout();
     }
-  }, [userId]);
+  }, [userId, day]);
 
   return (
     <div className="flex flex-col pt-20 mx-auto w-full bg-lime-200 border border-black border-solid bg-blend-normal max-w-[480px]">
@@ -39,31 +65,46 @@ function Progression() {
         </div>
         <div className="flex gap-5 py-4 mt-5 whitespace-nowrap border-t border-neutral-200">
           <div className="text-base font-medium text-black">Height</div>
-          <div className="flex-auto pl-36 text-xl text-zinc-600">feet</div>
+          <div className="flex-auto pl-36 text-xl text-zinc-600">
+            {user &&
+              user.height_unit &&
+              (user.height_unit === "metric"
+                ? `${user.height_meters} m ${user.height_centimeters} cm`
+                : `${user.height_feet} ft ${user.height_inches} in`)}
+          </div>
         </div>
         <div className="flex gap-5 py-4 whitespace-nowrap border-t border-neutral-200">
           <div className="self-start text-base font-medium text-black">
             Weight
           </div>
           <div className="flex-auto pl-36 text-xl text-zinc-600">
-            {user ? user.weight : "loading..."} pounds
+            {user &&
+              user.weight &&
+              user.weight_unit &&
+              `${user.weight} ${user.weight_unit}`}
           </div>
         </div>
         <div className="flex gap-5 py-4 whitespace-nowrap border-t border-neutral-200">
-          <div className="my-auto text-base font-medium text-black">BMI</div>
-          <div className="flex-auto pl-48 -ml-px text-xl text-zinc-600">%</div>
+          <div className="self-start text-base font-medium text-black">BMI</div>
+          <div className="flex-auto pl-36 text-xl text-zinc-600">
+            {user && user.bmi}
+          </div>
         </div>
         <div className="flex gap-5 py-4 border-t border-neutral-200">
           <div className="flex-auto my-auto text-base font-medium text-black">
             Current Workout
           </div>
-          <div className="flex-auto text-xl text-zinc-600">Chest</div>
+          <div className="flex-auto text-xl text-zinc-600">{force}</div>
         </div>
         <div className="flex gap-5 py-4 mb-1.5 border-t border-neutral-200">
           <div className="flex-auto text-base font-medium text-black">
             Resting Heartrate
           </div>
-          <div className="flex-auto text-xl text-zinc-600">BPM</div>
+          <div className="flex-auto text-xl text-zinc-600">
+            {user &&
+              user.resting_heart_rate &&
+              `${user.resting_heart_rate} BPM`}
+          </div>
         </div>
       </div>
       <div className="flex gap-5 justify-between px-10 py-7 mt-44 w-full text-xs font-medium text-black bg-white shadow-[0px_0px_0px_rgba(0,0,0,0.1)]">
@@ -101,4 +142,3 @@ function Progression() {
 }
 
 export default Progression;
-
