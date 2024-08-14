@@ -2,8 +2,10 @@
 ONLINE CAPSTONE PROJECT (CS_467)
 Dennis Lam, Melanie Archer, Soo Young Lee
 
-## How to install and run
-You can use the Fitness Trainer online.
+## Table of Contents
+- [How to Install and Run](#how-to-install-and-run)
+- [Install the Fitness Trainer on Your Computer](#install-the-fitness-trainer-on-your-computer)
+
 ## How to Install and Run
 You can use the Fitness Trainer online.
 
@@ -49,19 +51,18 @@ If you see error messages, it probably means you have to install this software. 
 ### 2. Clone or Download the Fitness Trainer Application Code
 Clone the repository:
 
-
-2. Clone or download the Fitness Trainer application code:
 ```
 git clone https://github.com/dennislam4/CrossPlatformTrainer
 ```
 
 Or download it from [GitHub](https://github.com/dennislam4/CrossPlatformTrainer).
 
-https://github.com/dennislam4/CrossPlatformTrainer
+### 3. Navigate to the Project Directory
+In a console window on your computer, go to where you have downloaded or cloned the Fitness Trainer code.
+Go to the CrossPlatformTrainer folder:
 
 ```
 cd CrossPlatformTrainer
-4. Now, go to the backend directory.
 ```
 
 ### 4. Navigate to the Backend Directory
@@ -81,8 +82,6 @@ npm install
 ### 6. Set Up Environment Variables
 After the process ends, stay in the backend directory. Rename the `env.example` file to `.env`:
 
-```
-3. Stay in the `backend` directory, and rename the `env.example` file to `.env`
 ```shell
 mv env.example .env
 ```
@@ -107,10 +106,7 @@ You should see:
 ```
 Successfully connected to MongoDB fitness_trainer collection using Mongoose
 ```
-```
-You should see `Successfully connected to MongoDB fitness_trainer collection using Mongoose` in the console window.
 
-**To stop this database server,** press `CTRL-C` in the console from the `backend` directory.
 To stop this database server, press `CTRL+C` in the console from the backend directory.
 
 ### 8. Install Frontend Dependencies
@@ -118,17 +114,12 @@ Open a new, separate console window. Go to the frontend directory. Type:
 
 ```
 cd ../frontend
-6. **Now**, in a **separate** console window, go to the `frontend` directory, and type:
-```shell
 npm install
 ```
 
 ### 9. Start the Frontend Server
 After this process ends, in this same console window, type:
 
-```
-```
-7. In this console window, type:
 ```shell
 npm start
 ```
@@ -142,11 +133,8 @@ Compiled successfully!
 Your web browser will open and display [http://localhost:3000](http://localhost:3000).
 
 Use the login provided above to sign in.
-```
-You should see `Compiled successfully!` in the console window, and `http://localhost:3000` open in the browser.
 
 To stop this front-end server, press `CTRL+C` in the console from the frontend directory.
-**To stop this front end server,** press `CTRL-C` in the console from the `frontend` directory.
 
 
 
